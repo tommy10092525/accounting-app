@@ -21,6 +21,10 @@ coverage
 # Vercel
 .vercel
 
+# Cloudflare / Wrangler
+.wrangler
+worker-configuration.d.ts
+
 # Build Outputs
 .next/
 out/

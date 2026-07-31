@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "accounting-app-server",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  }
+  // D1バインディングは、DBスキーマを実装するタイミングで追加する
+  // 参考: https://developers.cloudflare.com/d1/get-started/
+}
