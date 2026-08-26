@@ -4,21 +4,35 @@
   "type": "module",
   "private": true,
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "build": "tsc -p tsconfig.build.json",
     "lint": "eslint --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:apply-local": "node scripts/apply-local-migrations.mjs",
+    "auth:generate-schema": "better-auth generate --config auth-schema-gen.config.ts --output src/db/auth-schema.ts -y"
   },
   "dependencies": {
-    "hono": "^4.12.31"
+    "@hono/zod-validator": "^0.9.0",
+    "better-auth": "^1.7.1",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.31",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260722.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^26.2.0",
+    "auth": "1.7.1",
+    "drizzle-kit": "^0.31.10",
+    "globals": "^16.5.0",
     "typescript": "5.9.2",
     "wrangler": "^4.113.0"
   }

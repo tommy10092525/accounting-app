@@ -6,7 +6,30 @@
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
-  }
-  // D1バインディングは、DBスキーマを実装するタイミングで追加する
-  // 参考: https://developers.cloudflare.com/d1/get-started/
+  },
+  "vars": {
+    "WEB_ORIGIN": "http://localhost:3000",
+    "BETTER_AUTH_URL": "http://localhost:8787",
+    "EMAIL_FROM_ADDRESS": "no-reply@koki-tominaga.cc"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "accounting-app-d1",
+      "database_id": "11ee53d7-ae23-4061-bad7-ba4e2a09c8de",
+      "migrations_dir": "./drizzle"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "accounting-app-r2"
+    }
+  ],
+  "send_email": [
+    {
+      "name":"EMAIL",
+      "remote": true
+    }
+  ]
 }

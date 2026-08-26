@@ -27,6 +27,6 @@ export const config = [
     },
   },
   {
-    ignores: ["dist/**"],
+    ignores: ["dist/**", ".wrangler/**", "worker-configuration.d.ts"],
   },
 ];
