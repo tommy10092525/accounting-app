@@ -23,6 +23,8 @@ export const circles = sqliteTable(
   {
     id: id(),
     name: text("name").notNull(),
+    // 所属大学名。既存行のために default("") を付けている(アプリ層のzodでは空文字を弾く)
+    universityName: text("university_name").notNull().default(""),
     // 利用者(一般メンバー)が立替申請を行う共有URLに使うトークン
     publicToken: text("public_token").notNull(),
     createdAt: createdAt(),
@@ -168,7 +170,10 @@ export const reimbursementRequests = sqliteTable(
       .notNull()
       .references(() => circles.id),
     payerName: text("payer_name").notNull(),
+    // 件名(何の支出か)。既存行のために default("") を付けている(アプリ層のzodでは空文字を弾く)
+    title: text("title").notNull().default(""),
     amount: integer("amount").notNull(),
+    // 長文メモ(任意)
     memo: text("memo"),
     receiptImageKey: text("receipt_image_key").notNull(), // R2オブジェクトキー
     status: text("status", { enum: ["pending", "approved", "rejected"] })

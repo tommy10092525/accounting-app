@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { userAdditionalFields } from "./auth-fields";
 import { createDb, schema } from "./db";
 
 // Cloudflare Workersはbinding(env)がリクエスト単位でしか取得できないため、
@@ -13,6 +14,7 @@ export function createAuth(env: Env) {
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
     trustedOrigins: [env.WEB_ORIGIN],
+    user: { additionalFields: userAdditionalFields },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,

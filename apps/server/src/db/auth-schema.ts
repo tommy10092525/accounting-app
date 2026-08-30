@@ -22,6 +22,7 @@ export const user = sqliteTable("user", {
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+  phoneNumber: text("phone_number"),
 });
 
 export const session = sqliteTable(
