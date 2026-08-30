@@ -1,5 +1,5 @@
 import React from 'react'
-import footerImage from "@/components/images/Wave_Bottom.png"
+import footerImage from "@/components/images/Wave_Bottom.avif"
 
 const Footer = () => {
   return (

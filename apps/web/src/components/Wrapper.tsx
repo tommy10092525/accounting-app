@@ -6,7 +6,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Header />
-      <div className="m-12 min-h-screen">{children}</div>
+      <div className="m-12 min-h-screen max-w-2xl mx-auto">{children}</div>
       <Footer />
     </div>
   );

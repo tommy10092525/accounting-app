@@ -1,5 +1,5 @@
 import React from 'react'
-import wave from "@/components/images/Wave_Top.png"
+import wave from "@/components/images/Wave_Top.avif"
 import menuIcon from "@/components/images/Menu.svg"
 
 const Header = () => {
