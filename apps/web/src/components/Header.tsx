@@ -34,7 +34,7 @@ const Header = ({ menuItems }: HeaderProps) => {
             className="fixed inset-0 z-20 cursor-default"
             onClick={() => setIsMenuOpen(false)}
           />
-          <nav className="absolute left-4 top-16 z-30 w-48 overflow-hidden rounded-xl border bg-card shadow-lg">
+          <nav className="absolute left-4 top-16 z-30 w-48 overflow-hidden rounded-xl border-2 border-brand-blue bg-card shadow-lg">
             {menuItems && menuItems.length > 0 ? (
               menuItems.map((item) =>
                 item.to ? (

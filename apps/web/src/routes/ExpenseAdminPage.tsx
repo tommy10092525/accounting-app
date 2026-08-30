@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const FIELD_CLASS="mt-2 h-12 rounded-xl border-2 border-brand-blue bg-card"
+
 export function ExpenseAdminPage() {
   const queryClient = useQueryClient();
   const [amount, setAmount] = useState("");
@@ -63,7 +65,7 @@ export function ExpenseAdminPage() {
               id="expense-description"
               required
               placeholder="テキストを入力"
-              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              className={FIELD_CLASS}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -78,7 +80,7 @@ export function ExpenseAdminPage() {
               min={1}
               required
               placeholder="¥0"
-              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              className={FIELD_CLASS}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
@@ -91,7 +93,7 @@ export function ExpenseAdminPage() {
               id="expense-date"
               type="date"
               required
-              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              className={FIELD_CLASS}
               value={occurredOn}
               onChange={(e) => setOccurredOn(e.target.value)}
             />

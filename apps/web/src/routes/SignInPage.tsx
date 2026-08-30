@@ -44,7 +44,6 @@ export function SignInPage() {
 
     void navigate("/dashboard");
   }
-
   return (
     <Wrapper>
       <h1 className="text-center text-2xl font-bold">ログイン</h1>
