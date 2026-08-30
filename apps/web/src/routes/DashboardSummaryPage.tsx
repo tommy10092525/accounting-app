@@ -174,7 +174,7 @@ export function DashboardSummaryPage() {
             variant="outline"
             className="rounded-xl border-3 border-pink-400 text-pink-400"
           >
-            <Link to="#" className="flex-col block h-24">
+            <Link to="/dashboard/subscription" className="flex-col block h-24">
               <CreditCardIcon
                 size={32}
                 className="bg-pink-400 text-white p-2 size-12 rounded-full"
