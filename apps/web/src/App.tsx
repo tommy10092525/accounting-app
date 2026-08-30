@@ -1,5 +1,6 @@
-import { Link, Route, Routes, HashRouter } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import { RequireAuth } from "@/components/RequireAuth";
+import Wrapper from "@/components/Wrapper";
 import { AdminLayout } from "@/routes/AdminLayout";
 import { DashboardSummaryPage } from "@/routes/DashboardSummaryPage";
 import { ExpenseAdminPage } from "@/routes/ExpenseAdminPage";
@@ -9,13 +10,11 @@ import { ReimbursementSubmitPage } from "@/routes/ReimbursementSubmitPage";
 import { ReimbursementsAdminPage } from "@/routes/ReimbursementsAdminPage";
 import { SignInPage } from "@/routes/SignInPage";
 import { SignUpPage } from "@/routes/SignUpPage";
-import Header from "./components/Header";
 
 function HomePage() {
   return (
-    <div>
-        <Header/>
-      <div className="flex flex-col items-start gap-2 p-8">
+    <Wrapper>
+      <div className="flex flex-col items-start gap-2">
         <p>サークル会計アプリ（セットアップ中）</p>
         <Link to="/signup" className="underline">
           新規登録
@@ -24,7 +23,7 @@ function HomePage() {
           ログイン
         </Link>
       </div>
-    </div>
+    </Wrapper>
   );
 }
 

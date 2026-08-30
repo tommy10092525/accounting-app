@@ -1,17 +1,8 @@
-import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import Wrapper from "@/components/Wrapper";
-
-const NAV_ITEMS = [
-  { to: "/dashboard", label: "サマリー", end: true },
-  { to: "/dashboard/reimbursements", label: "立替申請" },
-  { to: "/dashboard/income", label: "収入" },
-  { to: "/dashboard/expenses", label: "支出" },
-];
 
 export function AdminLayout() {
   const navigate = useNavigate();
@@ -34,34 +25,18 @@ export function AdminLayout() {
   if (!circle) return <Navigate to="/onboarding" replace />;
 
   return (
-    <Wrapper>
-      <div className="mx-auto max-w-3xl p-8">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">{circle.name}</h1>
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            ログアウト
-          </Button>
-        </div>
-        <nav className="mt-6 flex gap-4 border-b pb-2">
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                cn(
-                  "text-sm text-muted-foreground hover:text-foreground",
-                  isActive && "font-medium text-foreground underline underline-offset-4",
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-        <div className="mt-6">
-          <Outlet context={{ circle }} />
-        </div>
+    <Wrapper
+      menuItems={[
+        { label: "サマリー", to: "/dashboard" },
+        { label: "立替申請の承認", to: "/dashboard/reimbursements" },
+        { label: "収入登録", to: "/dashboard/income" },
+        { label: "支出登録", to: "/dashboard/expenses" },
+        { label: "ログアウト", onClick: handleSignOut },
+      ]}
+    >
+      <h1 className="text-center text-2xl font-bold">{circle.name}</h1>
+      <div className="mt-8">
+        <Outlet context={{ circle }} />
       </div>
     </Wrapper>
   );

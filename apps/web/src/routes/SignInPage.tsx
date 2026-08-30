@@ -5,21 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Wrapper from "@/components/Wrapper";
+import eyeIcon from "@/components/images/Eye_Icon.svg";
+import checkboxIcon from "@/components/images/Checkbox.svg";
+import checkboxCheckedIcon from "@/components/images/Checkbox_Check.svg";
 
 export function SignInPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const justVerified =
-    searchParams.get("verified") === "1" && !searchParams.get("error");
+  const justVerified = searchParams.get("verified") === "1" && !searchParams.get("error");
   const verificationError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(
-    verificationError
-      ? "確認リンクが無効か期限切れです。もう一度登録してください。"
-      : null,
+    verificationError ? "確認リンクが無効か期限切れです。もう一度登録してください。" : null,
   );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -30,6 +32,7 @@ export function SignInPage() {
     const { error: signInError } = await authClient.signIn.email({
       email,
       password,
+      rememberMe,
     });
 
     setIsSubmitting(false);
@@ -43,64 +46,74 @@ export function SignInPage() {
   }
 
   return (
-    <div>
-      <Wrapper>
-        <h1 className="text-2xl font-bold text-center m-16">ログイン</h1>
-        {justVerified && (
-          <p className="text-xs text-center mb-2">
-            メールアドレスの確認が完了しました。
-            <br />
-            ログインしてください。
-          </p>
-        )}
-        <form onSubmit={handleSubmit}>
-          <div>
-            <Label htmlFor="email">メールアドレス</Label>
-            <Input
-              id="email"
-              className="border-2 rounded-xl border-primary h-12 mt-2"
-              value={email}
-              onChange={(e) => {
-                setEmail(() => e.target.value);
-              }}
-            />
-          </div>
-          <div className="mt-8">
-            <Label htmlFor="password">パスワード</Label>
+    <Wrapper>
+      <h1 className="text-center text-2xl font-bold">ログイン</h1>
+      {justVerified && (
+        <p className="mt-4 text-center text-xs">
+          メールアドレスの確認が完了しました。
+          <br />
+          ログインしてください。
+        </p>
+      )}
+      <form className="mt-8" onSubmit={handleSubmit}>
+        <div>
+          <Label htmlFor="email">メールアドレス</Label>
+          <Input
+            id="email"
+            type="email"
+            required
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mt-6">
+          <Label htmlFor="password">パスワード</Label>
+          <div className="relative mt-2">
             <Input
               id="password"
-              className="border-2 rounded-xl border-primary h-12 mt-2"
-              type="password"
+              className="h-12 rounded-xl border-2 border-brand-blue pr-11"
+              type={isPasswordVisible ? "text" : "password"}
+              required
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
             />
-          </div>
-          <div className="mt-8 flex items-center">
-            <Button
-              className="rounded-full text-lg bg-[#FF506A] hover:bg-[#FF506A] py-2 px-8 mx-auto hover:ring-3 ring-[#FF506A]/50"
-              disabled={isSubmitting}
-              type="submit"
+            <button
+              type="button"
+              aria-label={isPasswordVisible ? "パスワードを隠す" : "パスワードを表示"}
+              onClick={() => setIsPasswordVisible((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
             >
-              {isSubmitting ? "ログイン中..." : "ログイン"}
-            </Button>
+              <img src={eyeIcon} alt="" className="size-5 opacity-60" />
+            </button>
           </div>
-          {error && (
-            <p className="text-xs font-thin text-red-500 text-center mt-2">
-              メールアドレスかパスワードが違います
-            </p>
-          )}
-        </form>
-        <div className="flex flex-col gap-4 mt-4">
-          <Link to="/signup" className="text-primary underline text-xs">
-            新規登録はこちら
-          </Link>
-          <Link to="/signup" className="text-primary underline text-xs">
-            パスワードが思い出せない場合
-          </Link>
         </div>
-      </Wrapper>
-    </div>
+        <button
+          type="button"
+          className="mt-4 flex items-center gap-2"
+          onClick={() => setRememberMe((v) => !v)}
+        >
+          <img src={rememberMe ? checkboxCheckedIcon : checkboxIcon} alt="" className="size-5" />
+          <span className="text-sm">ログイン状態を保存する</span>
+        </button>
+        {error && <p className="mt-2 text-center text-xs text-destructive">{error}</p>}
+        <div className="mt-8 flex items-center">
+          <Button
+            className="mx-auto rounded-full px-8 py-2 text-lg"
+            disabled={isSubmitting}
+            type="submit"
+          >
+            {isSubmitting ? "ログイン中..." : "ログイン"}
+          </Button>
+        </div>
+      </form>
+      <div className="mt-6 flex flex-col items-center gap-3">
+        <Link to="/signup" className="text-xs text-primary underline">
+          新規登録はこちら
+        </Link>
+        {/* パスワード再設定フローは未実装のため、現時点ではリンクにしていません */}
+        <span className="text-xs text-muted-foreground">パスワードを忘れた方はこちら(準備中)</span>
+      </div>
+    </Wrapper>
   );
 }

@@ -51,66 +51,90 @@ export function ExpenseAdminPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <form className="flex flex-wrap items-end gap-3 rounded-md border p-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="expense-amount">金額(円)</Label>
-          <Input
-            id="expense-amount"
-            type="number"
-            min={1}
-            required
-            className="w-32"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="expense-description">内容</Label>
-          <Input
-            id="expense-description"
-            required
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="expense-date">日付</Label>
-          <Input
-            id="expense-date"
-            type="date"
-            value={occurredOn}
-            onChange={(e) => setOccurredOn(e.target.value)}
-          />
-        </div>
-        <Button type="submit">追加</Button>
-        {error && <p className="w-full text-sm text-destructive">{error}</p>}
-      </form>
-
-      {!isPending && rows?.length === 0 && (
-        <p className="text-sm text-muted-foreground">支出記録はまだありません。</p>
-      )}
-      <div className="flex flex-col gap-2">
-        {rows?.map((row) => (
-          <div key={row.id} className="flex items-center justify-between rounded-md border p-3">
-            <div>
-              <p className="font-medium">
-                {row.description} — ¥{row.amount.toLocaleString()}
-                {row.source === "reimbursement" && (
-                  <span className="ml-2 text-xs text-muted-foreground">(立替由来)</span>
-                )}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {new Date(row.occurredOn).toLocaleDateString("ja-JP")}
-              </p>
-            </div>
-            {row.source === "manual" && (
-              <Button variant="ghost" size="sm" onClick={() => handleDelete(row.id)}>
-                削除
-              </Button>
-            )}
+    <div className="flex flex-col gap-8">
+      <div>
+        <h2 className="text-center text-xl font-bold">支出登録</h2>
+        <form className="mt-6" onSubmit={handleSubmit}>
+          <div>
+            <Label htmlFor="expense-description">
+              支出内容 <span className="ml-1 text-xs text-primary">必須</span>
+            </Label>
+            <Input
+              id="expense-description"
+              required
+              placeholder="テキストを入力"
+              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
-        ))}
+          <div className="mt-6">
+            <Label htmlFor="expense-amount">
+              金額 <span className="ml-1 text-xs text-primary">必須</span>
+            </Label>
+            <Input
+              id="expense-amount"
+              type="number"
+              min={1}
+              required
+              placeholder="¥0"
+              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+          <div className="mt-6">
+            <Label htmlFor="expense-date">
+              支払日 <span className="ml-1 text-xs text-primary">必須</span>
+            </Label>
+            <Input
+              id="expense-date"
+              type="date"
+              required
+              className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+              value={occurredOn}
+              onChange={(e) => setOccurredOn(e.target.value)}
+            />
+          </div>
+          {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+          <div className="mt-8 flex items-center">
+            <Button className="mx-auto rounded-full px-8 py-2 text-lg" type="submit">
+              登録
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-medium text-muted-foreground">登録済みの支出</h2>
+        {!isPending && rows?.length === 0 && (
+          <p className="mt-2 text-sm text-muted-foreground">支出記録はまだありません。</p>
+        )}
+        <div className="mt-2 flex flex-col gap-2">
+          {rows?.map((row) => (
+            <div
+              key={row.id}
+              className="flex items-center justify-between rounded-xl border-2 border-brand-blue/40 bg-card px-4 py-3"
+            >
+              <div>
+                <p className="font-medium">
+                  {row.description} — ¥{row.amount.toLocaleString()}
+                  {row.source === "reimbursement" && (
+                    <span className="ml-2 text-xs text-muted-foreground">(立替由来)</span>
+                  )}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(row.occurredOn).toLocaleDateString("ja-JP")}
+                </p>
+              </div>
+              {row.source === "manual" && (
+                <Button variant="ghost" size="sm" onClick={() => handleDelete(row.id)}>
+                  削除
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

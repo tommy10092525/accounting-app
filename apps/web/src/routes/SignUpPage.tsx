@@ -37,60 +37,67 @@ export function SignUpPage() {
 
   return (
     <Wrapper>
-      <h1 className="text-2xl font-bold text-center m-16">新規登録</h1>
-      <p className="text-center mb-8 text-sm">
+      <h1 className="text-center text-2xl font-bold">新規登録</h1>
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         お使いのメールアドレス宛に確認メールを送信します
       </p>
-      <form onSubmit={handleSubmit}>
+      <form className="mt-8" onSubmit={handleSubmit}>
         <div>
-          <Label htmlFor="name">お名前</Label>
+          <Label htmlFor="name">
+            お名前 <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
           <Input
             id="name"
-            className="border-2 rounded-xl border-primary h-12 mt-2"
+            required
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
             value={name}
-            onChange={(e) => {
-              setName(() => e.target.value);
-            }}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <div className="mt-8">
-          <Label htmlFor="email">メールアドレス</Label>
+        <div className="mt-6">
+          <Label htmlFor="email">
+            メールアドレス <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
           <Input
             id="email"
-            className="border-2 rounded-xl border-primary h-12 mt-2"
+            type="email"
+            required
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
             value={email}
-            onChange={(e) => {
-              setEmail(() => e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="mt-8">
-          <Label htmlFor="password">パスワード</Label>
+        <div className="mt-6">
+          <Label htmlFor="password">
+            パスワード <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
           <Input
             id="password"
-            className="border-2 rounded-xl border-primary h-12 mt-2"
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
             type="password"
+            required
+            minLength={8}
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <div className="mt-8 flex items-center">
           <Button
-            className="rounded-full text-lg bg-[#FF506A] hover:bg-[#FF506A] py-2 px-8 mx-auto hover:ring-3 ring-[#FF506A]/50"
+            className="mx-auto rounded-full px-8 py-2 text-lg"
             disabled={isSubmitting}
             type="submit"
           >
             {isSubmitting ? "登録中..." : "登録する"}
           </Button>
         </div>
-        {isSent && <p className="text-center text-sm mt-4">{email} 宛てにメールを送信しました。<br/>メール内のリンクを開いて登録を完了してください。</p>}
-        {error && (
-          <p className="text-xs font-thin text-red-500 text-center mt-2">
-            メールアドレスかパスワードが違います
+        {isSent && (
+          <p className="mt-4 text-center text-sm">
+            {email} 宛てにメールを送信しました。
+            <br />
+            メール内のリンクを開いて登録を完了してください。
           </p>
         )}
+        {error && <p className="mt-2 text-center text-xs text-destructive">{error}</p>}
       </form>
     </Wrapper>
   );

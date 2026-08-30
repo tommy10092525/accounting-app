@@ -1,22 +1,18 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Wrapper from "@/components/Wrapper";
+import photoIcon from "@/components/images/photo_Icon.svg";
 
 const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10MB
 
 export function ReimbursementSubmitPage() {
   const { token } = useParams<{ token: string }>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: circle, isPending: isCirclePending } = useQuery({
     queryKey: ["public-circle", token],
@@ -87,81 +83,103 @@ export function ReimbursementSubmitPage() {
 
   if (!circle) {
     return (
-      <div className="flex min-h-svh items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>URLが正しくありません</CardTitle>
-            <CardDescription>共有URLをもう一度ご確認ください。</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      <Wrapper>
+        <h1 className="text-center text-2xl font-bold">URLが正しくありません</h1>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          共有URLをもう一度ご確認ください。
+        </p>
+      </Wrapper>
     );
   }
 
   if (isSubmitted) {
     return (
-      <div className="flex min-h-svh items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>申請を受け付けました</CardTitle>
-            <CardDescription>管理者の承認をお待ちください。</CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      <Wrapper>
+        <h1 className="text-center text-2xl font-bold">申請を受け付けました</h1>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          管理者の承認をお待ちください。
+        </p>
+      </Wrapper>
     );
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>立替申請</CardTitle>
-          <CardDescription>{circle.name}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="payer-name">支払者</Label>
-              <Input
-                id="payer-name"
-                required
-                value={payerName}
-                onChange={(e) => setPayerName(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="amount">金額(円)</Label>
-              <Input
-                id="amount"
-                type="number"
-                min={1}
-                step={1}
-                required
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="receipt">レシート画像(10MBまで)</Label>
-              <Input
-                id="receipt"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic"
-                required
-                onChange={handleFileChange}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="memo">メモ</Label>
-              <Input id="memo" value={memo} onChange={(e) => setMemo(e.target.value)} />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "送信中..." : "申請する"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <Wrapper>
+      <h1 className="text-center text-2xl font-bold">{circle.name}</h1>
+      <form className="mt-8" onSubmit={handleSubmit}>
+        <div>
+          <Label htmlFor="payer-name">
+            支払者 <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
+          <Input
+            id="payer-name"
+            required
+            placeholder="テキストを入力"
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+            value={payerName}
+            onChange={(e) => setPayerName(e.target.value)}
+          />
+        </div>
+        <div className="mt-6">
+          <Label htmlFor="amount">
+            金額 <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
+          <Input
+            id="amount"
+            type="number"
+            min={1}
+            step={1}
+            required
+            placeholder="¥0"
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+        <div className="mt-6">
+          <Label htmlFor="receipt">
+            レシート画像アップロード <span className="ml-1 text-xs text-muted-foreground">任意</span>
+          </Label>
+          <input
+            ref={fileInputRef}
+            id="receipt"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-blue/60 text-sm font-medium text-white"
+          >
+            <img src={photoIcon} alt="" className="size-5" />
+            {receipt ? receipt.name : "ファイルを選択"}
+          </button>
+        </div>
+        <div className="mt-6">
+          <Label htmlFor="memo">
+            メモ <span className="ml-1 text-xs text-muted-foreground">任意</span>
+          </Label>
+          <textarea
+            id="memo"
+            placeholder="テキストを入力"
+            className="mt-2 min-h-32 w-full rounded-xl border-2 border-brand-blue bg-transparent px-3 py-2 text-sm outline-none"
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+          />
+        </div>
+        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+        <div className="mt-8 flex items-center">
+          <Button
+            className="mx-auto rounded-full px-8 py-2 text-lg"
+            disabled={isSubmitting}
+            type="submit"
+          >
+            {isSubmitting ? "送信中..." : "立替申請"}
+          </Button>
+        </div>
+      </form>
+    </Wrapper>
   );
 }

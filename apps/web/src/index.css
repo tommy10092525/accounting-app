@@ -5,14 +5,16 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: #F3F3FA;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #5175FF;
+  /* コーラルピンクがボタン等の主要アクションカラー、ブルーはヘッダー/フッターの波・枠線・アクセント */
+  --primary: #FF506A;
   --primary-foreground: oklch(0.985 0 0);
+  --brand-blue: #5175FF;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: #5175FF;
   --muted: oklch(0.97 0 0);
@@ -71,6 +73,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-brand-blue: var(--brand-blue);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -101,5 +104,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      linear-gradient(to right, oklch(0 0 0 / 4%) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(0 0 0 / 4%) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 }

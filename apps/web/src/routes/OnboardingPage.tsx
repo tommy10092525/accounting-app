@@ -4,13 +4,7 @@ import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Wrapper from "@/components/Wrapper";
 
 export function OnboardingPage() {
   const navigate = useNavigate();
@@ -36,30 +30,33 @@ export function OnboardingPage() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>サークルを作成</CardTitle>
-          <CardDescription>会計を管理するサークルの名前を入力してください</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="circle-name">サークル名</Label>
-              <Input
-                id="circle-name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "作成中..." : "作成する"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <Wrapper>
+      <h1 className="text-center text-2xl font-bold">サークルを作成</h1>
+      <p className="mt-4 text-center text-sm text-muted-foreground">
+        会計を管理するサークルの名前を入力してください
+      </p>
+      <form className="mt-8" onSubmit={handleSubmit}>
+        <Label htmlFor="circle-name">
+          サークル名 <span className="ml-1 text-xs text-primary">必須</span>
+        </Label>
+        <Input
+          id="circle-name"
+          required
+          className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+        <div className="mt-8 flex items-center">
+          <Button
+            className="mx-auto rounded-full px-8 py-2 text-lg"
+            disabled={isSubmitting}
+            type="submit"
+          >
+            {isSubmitting ? "作成中..." : "作成する"}
+          </Button>
+        </div>
+      </form>
+    </Wrapper>
   );
 }

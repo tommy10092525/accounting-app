@@ -1,12 +1,18 @@
-import React from "react";
+import type React from "react";
 import Footer from "./Footer";
-import Header from "./Header";
+import Header, { type HeaderMenuItem } from "./Header";
 
-const Wrapper = ({ children }: { children: React.ReactNode }) => {
+const Wrapper = ({
+  children,
+  menuItems,
+}: {
+  children: React.ReactNode;
+  menuItems?: HeaderMenuItem[];
+}) => {
   return (
-    <div>
-      <Header />
-      <div className="m-12 min-h-screen max-w-2xl mx-auto">{children}</div>
+    <div className="flex min-h-screen flex-col">
+      <Header menuItems={menuItems} />
+      <div className="mx-auto w-full max-w-md flex-1 px-6 py-8">{children}</div>
       <Footer />
     </div>
   );
