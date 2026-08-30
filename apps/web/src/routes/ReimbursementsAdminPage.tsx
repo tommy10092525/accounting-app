@@ -43,7 +43,9 @@ export function ReimbursementsAdminPage() {
     );
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      rows = rows.filter((r) => r.payerName.toLowerCase().includes(q));
+      rows = rows.filter(
+        (r) => r.payerName.toLowerCase().includes(q) || r.title.toLowerCase().includes(q),
+      );
     }
     rows = [...rows].sort((a, b) => {
       switch (sort) {
@@ -106,6 +108,10 @@ export function ReimbursementsAdminPage() {
         <div className="rounded-2xl border-2 border-brand-blue bg-card p-6">
           <dl className="flex flex-col gap-4">
             <div>
+              <dt className="text-sm text-muted-foreground">件名</dt>
+              <dd className="mt-1 border-b pb-2 font-medium">{selected.title}</dd>
+            </div>
+            <div>
               <dt className="text-sm text-muted-foreground">支払者</dt>
               <dd className="mt-1 border-b pb-2 font-medium">{selected.payerName}</dd>
             </div>
@@ -148,12 +154,12 @@ export function ReimbursementsAdminPage() {
         {selected.status === "pending" ? (
           <div className="flex justify-center gap-4">
             <Button
-              className="rounded-full bg-green-600 px-6 hover:bg-green-600/90"
+              className="rounded-full bg-green-600 px-12 hover:bg-green-600/90"
               onClick={() => handleApprove(selected.id)}
             >
               承認
             </Button>
-            <Button variant="destructive" className="rounded-full px-6" onClick={() => handleReject(selected.id)}>
+            <Button variant="destructive" className="rounded-full px-12" onClick={() => handleReject(selected.id)}>
               却下
             </Button>
           </div>
@@ -185,7 +191,7 @@ export function ReimbursementsAdminPage() {
         <img src={searchIcon} alt="" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-50" />
         <Input
           placeholder="検索"
-          className="h-10 rounded-full border-2 border-brand-blue pl-9"
+          className="h-10 rounded-full border-2 border-brand-blue pl-9 bg-card"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -200,7 +206,7 @@ export function ReimbursementsAdminPage() {
             className={
               sort === option.key
                 ? "rounded-full bg-brand-blue px-3 py-1 text-xs font-medium text-white"
-                : "rounded-full border px-3 py-1 text-xs text-muted-foreground"
+                : "rounded-full border px-3 py-1 text-xs text-muted-foreground bg-card"
             }
           >
             ↓{option.label}
@@ -220,13 +226,11 @@ export function ReimbursementsAdminPage() {
             className="flex items-center justify-between rounded-xl border-2 border-brand-blue/40 bg-card px-4 py-3 text-left"
           >
             <div>
-              <p className="font-medium">
-                {r.payerName}
-                <span className="ml-3 text-xs text-muted-foreground">
-                  {new Date(r.submittedAt).toLocaleString("ja-JP")}
-                </span>
+              <p className="font-bold text-xl">{r.title}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {r.payerName} / {new Date(r.submittedAt).toLocaleString("ja-JP")}
               </p>
-              <p className="mt-1">¥{r.amount.toLocaleString()}</p>
+              <p className="mt-1 font-medium">¥{r.amount.toLocaleString()}</p>
             </div>
             <span
               className={

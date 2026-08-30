@@ -31,6 +31,9 @@ export const reimbursementsApp = new Hono<{ Bindings: Env }>()
 
       const body = await c.req.parseBody();
 
+      const title = typeof body.title === "string" ? body.title.trim() : "";
+      if (!title) return c.json({ error: "title_required" }, 400);
+
       const payerName = typeof body.payerName === "string" ? body.payerName.trim() : "";
       if (!payerName) return c.json({ error: "payer_name_required" }, 400);
 
@@ -60,6 +63,7 @@ export const reimbursementsApp = new Hono<{ Bindings: Env }>()
 
       await db.insert(schema.reimbursementRequests).values({
         circleId: circle.id,
+        title,
         payerName,
         amount,
         memo: memo || null,

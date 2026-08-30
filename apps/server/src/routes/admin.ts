@@ -107,8 +107,9 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
       db.insert(schema.expenseRecords).values({
         circleId,
         amount: reimbursement.amount,
-        description: reimbursement.memo
-          ? `立替: ${reimbursement.payerName}(${reimbursement.memo})`
+        // 会計簿の摘要にはメモ(長文)ではなく件名を使う
+        description: reimbursement.title
+          ? `${reimbursement.title}(立替: ${reimbursement.payerName})`
           : `立替: ${reimbursement.payerName}`,
         source: "reimbursement",
         reimbursementRequestId: id,

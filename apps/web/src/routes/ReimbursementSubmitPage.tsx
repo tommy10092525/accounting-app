@@ -26,6 +26,7 @@ export function ReimbursementSubmitPage() {
     enabled: Boolean(token),
   });
 
+  const [title, setTitle] = useState("");
   const [payerName, setPayerName] = useState("");
   const [amount, setAmount] = useState("");
   const [memo, setMemo] = useState("");
@@ -57,6 +58,7 @@ export function ReimbursementSubmitPage() {
     setError(null);
 
     const formData = new FormData();
+    formData.set("title", title);
     formData.set("payerName", payerName);
     formData.set("amount", amount);
     formData.set("memo", memo);
@@ -108,6 +110,19 @@ export function ReimbursementSubmitPage() {
       <h1 className="text-center text-2xl font-bold">{circle.name}</h1>
       <form className="mt-8" onSubmit={handleSubmit}>
         <div>
+          <Label htmlFor="title">
+            件名 <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
+          <Input
+            id="title"
+            required
+            placeholder="テキストを入力"
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div className="mt-6">
           <Label htmlFor="payer-name">
             支払者 <span className="ml-1 text-xs text-primary">必須</span>
           </Label>
