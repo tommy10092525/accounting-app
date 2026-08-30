@@ -11,6 +11,7 @@ import { ReimbursementsAdminPage } from "@/routes/ReimbursementsAdminPage";
 import { SignInPage } from "@/routes/SignInPage";
 import { SignUpPage } from "@/routes/SignUpPage";
 import SettingAdminPage from "./routes/SettingAdminPage";
+import SubscriptionAdminPage from "./routes/SubscriptionAdminPage";
 
 function HomePage() {
   return (
@@ -57,6 +58,7 @@ export function App() {
           <Route path="income" element={<IncomeAdminPage />} />
           <Route path="expenses" element={<ExpenseAdminPage />} />
           <Route path="setting" element={<SettingAdminPage />} />
+          <Route path="subscription" element={<SubscriptionAdminPage />} />
         </Route>
       </Routes>
     </div>
