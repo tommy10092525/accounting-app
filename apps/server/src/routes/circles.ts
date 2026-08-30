@@ -7,6 +7,7 @@ import { createDb, schema } from "../db";
 
 const createCircleSchema = z.object({
   name: z.string().trim().min(1),
+  universityName: z.string().trim().min(1),
 });
 
 export const circlesApp = new Hono<{ Bindings: Env }>()
@@ -33,13 +34,13 @@ export const circlesApp = new Hono<{ Bindings: Env }>()
     });
     if (existing) return c.json({ error: "circle_already_exists" }, 409);
 
-    const { name } = c.req.valid("json");
+    const { name, universityName } = c.req.valid("json");
 
     const circleId = crypto.randomUUID();
     const publicToken = crypto.randomUUID();
 
     await db.batch([
-      db.insert(schema.circles).values({ id: circleId, name, publicToken }),
+      db.insert(schema.circles).values({ id: circleId, name, universityName, publicToken }),
       db.insert(schema.circleMembers).values({
         circleId,
         userId: session.user.id,

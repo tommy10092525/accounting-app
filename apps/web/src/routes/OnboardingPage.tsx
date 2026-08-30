@@ -9,6 +9,7 @@ import Wrapper from "@/components/Wrapper";
 export function OnboardingPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
+  const [universityName, setUniversityName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,7 @@ export function OnboardingPage() {
     setIsSubmitting(true);
     setError(null);
 
-    const res = await apiClient.api.circles.$post({ json: { name } });
+    const res = await apiClient.api.circles.$post({ json: { name, universityName } });
 
     setIsSubmitting(false);
 
@@ -46,6 +47,18 @@ export function OnboardingPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        <div className="mt-6">
+          <Label htmlFor="university-name">
+            大学名 <span className="ml-1 text-xs text-primary">必須</span>
+          </Label>
+          <Input
+            id="university-name"
+            required
+            className="mt-2 h-12 rounded-xl border-2 border-brand-blue"
+            value={universityName}
+            onChange={(e) => setUniversityName(e.target.value)}
+          />
+        </div>
         {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
         <div className="mt-8 flex items-center">
           <Button

@@ -4,6 +4,7 @@ import { createAuth } from "./auth";
 import { adminApp } from "./routes/admin";
 import { circlesApp } from "./routes/circles";
 import { reimbursementsApp } from "./routes/reimbursements";
+import { signupApp } from "./routes/signup";
 
 // apps/web はこの app をビルド後の dist/index.d.ts 経由で型参照する(RPC用)。
 // skipLibCheck によりビルド成果物内のアンビエント型(Env/D1Database等)への
@@ -19,6 +20,7 @@ const app = new Hono<{ Bindings: Env }>()
   )
   .get("/api/health", (c) => c.json({ status: "ok" }))
   .on(["GET", "POST"], "/api/auth/*", (c) => createAuth(c.env).handler(c.req.raw))
+  .route("/api/signup", signupApp)
   .route("/api/circles", circlesApp)
   .route("/api/public", reimbursementsApp)
   .route("/api/admin", adminApp);
