@@ -14,7 +14,25 @@ export function createAuth(env: Env) {
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
     trustedOrigins: [env.WEB_ORIGIN],
-    user: { additionalFields: userAdditionalFields },
+    user: {
+      additionalFields: userAdditionalFields,
+      // メールアドレス変更。確認済みユーザーの場合 better-auth は
+      // 「現在の(古い)アドレス」宛に確認リンクを送り、それを踏むまで変更を確定しない。
+      // 乗っ取られたセッションから勝手にログインIDを差し替えられないようにするための仕様。
+      // updateEmailWithoutVerification は未確認ユーザー向けの抜け道なので有効化しない。
+      changeEmail: {
+        enabled: true,
+        sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+          await env.EMAIL.send({
+            to: user.email,
+            from: env.EMAIL_FROM_ADDRESS,
+            subject: "【サークル会計アプリ】メールアドレス変更の確認",
+            text: `メールアドレスを ${newEmail} に変更するリクエストを受け付けました。\n以下のリンクを開くと変更が完了します。\n\n${url}\n\n心当たりがない場合はこのメールを破棄してください。変更は行われません。`,
+            html: `<p>メールアドレスを ${newEmail} に変更するリクエストを受け付けました。</p><p>以下のリンクを開くと変更が完了します。</p><p><a href="${url}">${url}</a></p><p>心当たりがない場合はこのメールを破棄してください。変更は行われません。</p>`,
+          });
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,

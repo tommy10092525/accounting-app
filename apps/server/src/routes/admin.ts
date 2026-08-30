@@ -23,6 +23,15 @@ const rejectSchema = z.object({
   reason: z.string().trim().optional(),
 });
 
+// 会員情報(設定画面)の更新。メールアドレスとパスワードの変更は
+// better-auth側の専用エンドポイント(changeEmail / changePassword)を使うのでここには含めない。
+const settingsSchema = z.object({
+  circleName: z.string().trim().min(1),
+  universityName: z.string().trim().min(1),
+  representativeName: z.string().trim().min(1),
+  phoneNumber: z.string().trim().min(1),
+});
+
 const ledgerEntrySchema = z.object({
   amount: z.number().int().positive(),
   description: z.string().trim().min(1),
@@ -250,4 +259,44 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     const expense = Number(expenseRow?.total ?? 0);
 
     return c.json({ income, expense, balance: income - expense });
+  })
+  // --- 会員情報(設定画面) ---
+  .get("/settings", async (c) => {
+    const db = createDb(c.env.DB);
+    const [circle, account] = await Promise.all([
+      db.query.circles.findFirst({
+        where: eq(schema.circles.id, c.get("circleId")),
+        columns: { name: true, universityName: true },
+      }),
+      db.query.user.findFirst({
+        where: eq(schema.user.id, c.get("userId")),
+        columns: { name: true, email: true, phoneNumber: true },
+      }),
+    ]);
+    if (!circle || !account) return c.json({ error: "not_found" }, 404);
+
+    return c.json({
+      circleName: circle.name,
+      universityName: circle.universityName,
+      representativeName: account.name,
+      phoneNumber: account.phoneNumber ?? "",
+      email: account.email,
+    });
+  })
+  .patch("/settings", zValidator("json", settingsSchema), async (c) => {
+    const db = createDb(c.env.DB);
+    const { circleName, universityName, representativeName, phoneNumber } = c.req.valid("json");
+
+    await db.batch([
+      db
+        .update(schema.circles)
+        .set({ name: circleName, universityName, updatedAt: new Date() })
+        .where(eq(schema.circles.id, c.get("circleId"))),
+      db
+        .update(schema.user)
+        .set({ name: representativeName, phoneNumber, updatedAt: new Date() })
+        .where(eq(schema.user.id, c.get("userId"))),
+    ]);
+
+    return c.json({ success: true });
   });

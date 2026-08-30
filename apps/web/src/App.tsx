@@ -10,6 +10,7 @@ import { ReimbursementSubmitPage } from "@/routes/ReimbursementSubmitPage";
 import { ReimbursementsAdminPage } from "@/routes/ReimbursementsAdminPage";
 import { SignInPage } from "@/routes/SignInPage";
 import { SignUpPage } from "@/routes/SignUpPage";
+import SettingAdminPage from "./routes/SettingAdminPage";
 
 function HomePage() {
   return (
@@ -55,6 +56,7 @@ export function App() {
           <Route path="reimbursements" element={<ReimbursementsAdminPage />} />
           <Route path="income" element={<IncomeAdminPage />} />
           <Route path="expenses" element={<ExpenseAdminPage />} />
+          <Route path="setting" element={<SettingAdminPage />} />
         </Route>
       </Routes>
     </div>
