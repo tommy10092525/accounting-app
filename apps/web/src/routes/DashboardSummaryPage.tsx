@@ -51,6 +51,7 @@ export function DashboardSummaryPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold text-center">サマリー</h1>
       <Link
         to="/dashboard/reimbursements"
         className="flex items-center justify-between rounded-xl border-2 border-destructive/60 bg-card px-4 py-3"

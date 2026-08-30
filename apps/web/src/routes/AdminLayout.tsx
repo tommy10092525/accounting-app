@@ -36,7 +36,7 @@ export function AdminLayout() {
         { label: "ログアウト", onClick: handleSignOut },
       ]}
     >
-      <h1 className="text-center text-2xl font-bold">{circle.name}</h1>
+      {/* <h1 className="text-center text-2xl font-bold">{circle.name}</h1> */}
       <div className="mt-8">
         <Outlet context={{ circle }} />
       </div>

@@ -52,8 +52,8 @@ export function IncomeAdminPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <h1 className="text-2xl font-bold text-center">収入登録</h1>
       <div>
-        <h2 className="text-center text-xl font-bold">収入登録</h2>
         <form className="mt-6" onSubmit={handleSubmit}>
           <div>
             <Label htmlFor="income-description">

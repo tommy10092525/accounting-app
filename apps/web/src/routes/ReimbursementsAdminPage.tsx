@@ -176,6 +176,7 @@ export function ReimbursementsAdminPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-bold text-center">立て替え申請</h1>
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">{showApproved ? "承認済み一覧" : "承認待ち一覧"}</h2>
         <button
