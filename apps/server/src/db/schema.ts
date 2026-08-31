@@ -202,6 +202,8 @@ export const incomeRecords = sqliteTable(
       .references(() => circles.id),
     amount: integer("amount").notNull(),
     description: text("description").notNull(),
+    // 領収書などの画像(任意)。R2のオブジェクトキーを保持する
+    receiptImageKey: text("receipt_image_key"),
     occurredOn: integer("occurred_on", { mode: "timestamp" }).notNull(),
     recordedBy: text("recorded_by")
       .notNull()
