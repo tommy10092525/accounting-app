@@ -4,7 +4,9 @@ import Wrapper from "@/components/Wrapper";
 import { AdminLayout } from "@/routes/AdminLayout";
 import { DashboardSummaryPage } from "@/routes/DashboardSummaryPage";
 import { ExpenseAdminPage } from "@/routes/ExpenseAdminPage";
+import { ForgotPasswordPage } from "@/routes/ForgotPasswordPage";
 import { IncomeAdminPage } from "@/routes/IncomeAdminPage";
+import { ResetPasswordPage } from "@/routes/ResetPasswordPage";
 import { OnboardingPage } from "@/routes/OnboardingPage";
 import { ReimbursementSubmitPage } from "@/routes/ReimbursementSubmitPage";
 import { ReimbursementsAdminPage } from "@/routes/ReimbursementsAdminPage";
@@ -12,6 +14,7 @@ import { SignInPage } from "@/routes/SignInPage";
 import { SignUpPage } from "@/routes/SignUpPage";
 import SettingAdminPage from "./routes/SettingAdminPage";
 import SubscriptionAdminPage from "./routes/SubscriptionAdminPage";
+import TransactionsAdminPage from "./routes/TransactionsAdminPage";
 
 function HomePage() {
   return (
@@ -36,6 +39,8 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/login" element={<SignInPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/c/:token" element={<ReimbursementSubmitPage />} />
         <Route
           path="/onboarding"
@@ -59,6 +64,7 @@ export function App() {
           <Route path="expenses" element={<ExpenseAdminPage />} />
           <Route path="setting" element={<SettingAdminPage />} />
           <Route path="subscription" element={<SubscriptionAdminPage />} />
+          <Route path="transactions" element={<TransactionsAdminPage />} />
         </Route>
       </Routes>
     </div>

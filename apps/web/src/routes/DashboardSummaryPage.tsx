@@ -3,17 +3,19 @@ import { Link, useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import {
-  CreditCardIcon,
-  CurrencyJpyIcon,
-  FileTextIcon,
-  GearIcon,
-  GridNineIcon,
-  ListBulletsIcon,
-  MegaphoneIcon,
-  MicrosoftExcelLogoIcon,
-  PlusIcon,
-} from "@phosphor-icons/react";
+
+import Shonin from "@/components/images/承認待ち.svg"
+import daigakubetsuShosiki from "@/components/images/書式フォーマット.svg"
+import sishutsutouroku from "@/components/images/支出登録アイコン.svg"
+import shunyutouroku from "@/components/images/収入登録アイコン.svg"
+import soushunyu from "@/components/images/総収入アイコン.svg"
+import sousishutu from "@/components/images/総支出アイコン.svg"
+import torihiki from "@/components/images/取引一覧アイコン.svg"
+import Shutsuryoku from "@/components/images/会計出力アイコン.svg"
+import settei from "@/components/images/設定アイコン.svg"
+import sabusuku from "@/components/images/サブスク管理アイコン.svg"
+import oshirase from "@/components/images/お知らせアイコン.svg"
+
 
 type Circle = { name: string; publicToken: string };
 
@@ -56,10 +58,7 @@ export function DashboardSummaryPage() {
         to="/dashboard/reimbursements"
         className="flex items-center justify-between rounded-xl border-2 border-destructive/60 bg-card px-4 py-3"
       >
-        <FileTextIcon
-          size={32}
-          className="rounded-full bg-red-500 text-white size-14 p-2"
-        />
+        <img src={Shonin}></img>
         <span className="font-medium">
           承認待ち <span className="text-destructive">{pendingCount}件</span>
         </span>
@@ -69,33 +68,34 @@ export function DashboardSummaryPage() {
       </Link>
       <Link
         to="#"
-        className="border-green-500 border-2 rounded-xl px-4 py-3 bg-white flex items-center"
+        className="border-green-500 border-2 rounded-xl px-4 py-3 bg-white flex items-center gap-2"
       >
-        <GridNineIcon size={32} className="text-green-500" />
-        大学別書式フォーマット登録 &gt;
-      </Link>
-      <Link
-        to="#"
-        className="border-purple-400 border-2 rounded-xl px-4 py-3 bg-white flex items-center"
-      >
-        <MicrosoftExcelLogoIcon size={32} className="text-purple-400" />
-        会計詳細の出力
+        <img src={daigakubetsuShosiki}></img>
+        大学別書式フォーマット登録（未） &gt;
       </Link>
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border-3 border-brand-blue bg-card p-4">
-          <p className="text-xs text-muted-foreground">総収入</p>
-          <p className="mt-1 text-lg font-semibold">
-            {summary ? `¥${summary.income.toLocaleString()}` : "-"}
-          </p>
+          <div className="flex gap-2">
+            <img src={soushunyu} className="size-12" alt="" />
+            <div>
+              <p className="text-lg font-semibold">総収入</p>
+              <p className="text-lg font-semibold">
+                {summary ? `¥${summary.income.toLocaleString()}` : "-"}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="rounded-xl border-3 border-brand-blue bg-card p-4">
-          <p className="text-xs text-muted-foreground">総支出</p>
-          <p className="mt-1 text-lg font-semibold">
-            {summary ? `¥${summary.expense.toLocaleString()}` : "-"}
-          </p>
+        <div className="rounded-xl border-3 border-brand-blue bg-card p-4 flex gap-2">
+          <img src={sousishutu} alt="" className="size-12" />
+          <div>
+            <p className="text-lg font-semibold">総支出</p>
+            <p className="mt-1 text-lg font-semibold">
+              {summary ? `¥${summary.expense.toLocaleString()}` : "-"}
+            </p>
+          </div>
         </div>
-        <div className="col-span-2 rounded-xl border-3 border-brand-blue bg-card p-4">
-          <p className="text-xs text-muted-foreground">収支</p>
+        <div className="rounded-xl border-3 border-brand-blue bg-card p-4 col-span-2">
+          <p className="text-muted-foreground">収支</p>
           <p className="mt-1 text-lg font-semibold">
             {summary ? `¥${summary.balance.toLocaleString()}` : "-"}
           </p>
@@ -108,78 +108,64 @@ export function DashboardSummaryPage() {
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-brand-blue text-brand-blue"
+            className="rounded-xl border-3 border-brand-blue text-brand-blue hover:text-brand-blue"
           >
             <Link to="/dashboard/expenses" className="flex-col block h-24">
-              <PlusIcon
-                size={32}
-                className="bg-brand-blue text-white p-2 size-12 rounded-full"
-              />
+              <img src={sishutsutouroku}/>
               支出登録
             </Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-green-500 text-green-500"
-          >
-            <Link to="/dashboard/expenses" className="flex-col block h-24">
-              <PlusIcon
-                size={32}
-                className="bg-green-500 text-white p-2 size-12 rounded-full"
-              />
-              支出登録
+            className="rounded-xl border-3 border-brand-green text-brand-green hover:text-brand-green"
+            >
+            <Link to="/dashboard/income" className="flex-col block h-24">
+              <img src={shunyutouroku}/>
+              収入登録
             </Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-sky-500 text-sky-500"
+            className="rounded-xl border-3 border-brand-lightblue text-brand-lightblue hover:text-brand-lightblue"
           >
-            <Link to="/dashboard/expenses" className="flex-col block h-24">
-              <ListBulletsIcon
-                className="bg-sky-500 text-white p-2 size-12 rounded-full"
+            <Link to="/dashboard/transactions" className="flex-col block h-24">
+              {/* <ListBulletsIcon
+                className="bg-brand-lightblue text-white p-2 size-12 rounded-full"
                 size={32}
-              />
-              取引
+              /> */}
+              <img src={torihiki}/>
+              収支一覧
             </Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-yellow-500 text-yellow-500"
+            className="rounded-xl border-3 border-brand-yellow text-brand-yellow hover:text-brand-yellow"
           >
-            <Link to="/dashboard/expenses" className="flex-col block h-24">
-              <CurrencyJpyIcon
-                size={32}
-                className="bg-yellow-500 text-white p-2 size-12 rounded-full"
-              />
-              会計出力
+            <Link to="#" className="flex-col block h-24">
+              <img src={Shutsuryoku} className=""/>
+              会計出力（未）
             </Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-purple-400 text-purple-400"
+            className="rounded-xl border-3 border-brand-lavender text-brand-lavender hover:text-brand-lavender"
           >
             <Link to="/dashboard/setting" className="flex-col block h-24">
-              <GearIcon
-                size={32}
-                className="bg-purple-400 text-white p-2 size-12 rounded-full"
-              />
+              <img src={settei}/>
               設定
             </Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-xl border-3 border-pink-400 text-pink-400"
+            className="rounded-xl border-3 border-brand-pink text-brand-pink hover:text-brand-pink"
           >
             <Link to="/dashboard/subscription" className="flex-col block h-24">
-              <CreditCardIcon
-                size={32}
-                className="bg-pink-400 text-white p-2 size-12 rounded-full"
-              />
+              <img src={sabusuku}/>
               サブスク管理
             </Link>
           </Button>
@@ -187,7 +173,8 @@ export function DashboardSummaryPage() {
       </div>
       <div className="border-brand-blue border-2 rounded-lg p-4 bg-blue-100">
         <div className="flex gap-6 items-center ">
-          <MegaphoneIcon size={32} className="text-brand-blue rotate-y-180" />
+          {/* <MegaphoneIcon size={32} className="text-brand-blue rotate-y-180" /> */}
+          <img src={oshirase}/>
           <h2 className="font-bold">お知らせ</h2>
         </div>
         <p>お知らせ１</p>
@@ -197,7 +184,7 @@ export function DashboardSummaryPage() {
           to={"#"}
           className="text-right text-brand-blue font-bold mt-4 block"
         >
-          全て見る &gt;
+          全て見る（未） &gt;
         </Link>
       </div>
       <div>

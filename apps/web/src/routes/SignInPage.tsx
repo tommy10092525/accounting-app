@@ -119,10 +119,9 @@ export function SignInPage() {
         <Link to="/signup" className="text-xs text-primary underline">
           新規登録はこちら
         </Link>
-        {/* パスワード再設定フローは未実装のため、現時点ではリンクにしていません */}
-        <span className="text-xs text-muted-foreground">
-          パスワードを忘れた方はこちら(準備中)
-        </span>
+        <Link to="/forgot-password" className="text-xs text-primary underline">
+          パスワードを忘れた方はこちら
+        </Link>
       </div>
     </Wrapper>
   );

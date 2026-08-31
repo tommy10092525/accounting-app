@@ -36,6 +36,25 @@ export function createAuth(env: Env) {
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
+      // 再設定は「パスワードを他人に知られたかもしれない」場合にも使われるので、
+      // 完了時に既存のセッションを失効させる(設定画面のchangePasswordと揃える)。
+      revokeSessionsOnPasswordReset: true,
+      sendResetPassword: async ({ user, token }) => {
+        // 引数の`url`は使わず、tokenから自前でフロントのURLを組み立てる。
+        // better-authが組むリダイレクト先は new URL().searchParams で作られるため、
+        // HashRouter構成だと `https://host/?token=xxx#/reset-password` のように
+        // トークンがハッシュの外に出てしまい useSearchParams で読めない。
+        // 自前で組めばハッシュ内に入れられるうえ、URLフラグメントはサーバーに
+        // 送信されないためアクセスログやRefererにトークンが残らない。
+        const url = `${env.WEB_ORIGIN}/#/reset-password?token=${token}`;
+        await env.EMAIL.send({
+          to: user.email,
+          from: env.EMAIL_FROM_ADDRESS,
+          subject: "【サークル会計アプリ】パスワードの再設定",
+          text: `以下のリンクからパスワードを再設定してください。\n\n${url}\n\nリンクの有効期限は1時間です。\nこのメールに心当たりがない場合は破棄してください。パスワードは変更されません。`,
+          html: `<p>以下のリンクからパスワードを再設定してください。</p><p><a href="${url}">${url}</a></p><p>リンクの有効期限は1時間です。</p><p>このメールに心当たりがない場合は破棄してください。パスワードは変更されません。</p>`,
+        });
+      },
     },
     emailVerification: {
       sendOnSignUp: true,

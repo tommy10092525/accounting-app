@@ -31,6 +31,7 @@ export function AdminLayout() {
         { label: "立替申請の承認", to: "/dashboard/reimbursements" },
         { label: "収入登録", to: "/dashboard/income" },
         { label: "支出登録", to: "/dashboard/expenses" },
+        {label:"収支一覧",to:"/dashboard/transactions"},
         { label: "設定", to: "/dashboard/setting" },
         { label: "サブスク管理", to: "/dashboard/subscription" },
         { label: "ログアウト", onClick: handleSignOut },

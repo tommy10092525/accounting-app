@@ -153,7 +153,7 @@ const SettingAdminPage = () => {
         <Button
           variant="destructive"
           onClick={handleSignOut}
-          className="mx-auto rounded-full border-2 border-destructive bg-transparent px-2 py-1 text-xl text-destructive hover:bg-transparent bg-card"
+          className="mx-auto rounded-full border-2 border-destructive px-2 py-1 text-xl text-destructive hover:bg-transparent bg-card"
         >
           ログアウト
         </Button>
