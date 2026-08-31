@@ -1,1 +1,9 @@
+# このファイルをコピーして .dev.vars を作成する(.dev.vars はgitignore対象)。
+# 値は wrangler dev でのみ使われ、wrangler.jsonc の vars より優先される。
+
+# node -e "console.log(require('crypto').randomBytes(32).toString('base64'))" などで生成する
 BETTER_AUTH_SECRET=
+
+# wrangler.jsonc の vars には本番URLが入っているため、ローカル開発ではここで上書きする
+WEB_ORIGIN=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:8787

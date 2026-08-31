@@ -7,10 +7,22 @@
   "observability": {
     "enabled": true
   },
+  // ここは「デプロイ時に適用される本番の値」。ローカル開発では .dev.vars の
+  // 同名キーが優先されるため、wrangler dev では localhost の値が使われる。
+  // assets でフロントも同じWorkerから配信するので、3つとも同一オリジンになる。
   "vars": {
-    "WEB_ORIGIN": "http://localhost:3000",
-    "BETTER_AUTH_URL": "http://localhost:8787",
+    "WEB_ORIGIN": "https://accounting-app-server.koki-tominaga.workers.dev",
+    "BETTER_AUTH_URL": "https://accounting-app-server.koki-tominaga.workers.dev",
     "EMAIL_FROM_ADDRESS": "no-reply@koki-tominaga.cc"
+  },
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "../web/dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first":[
+      "/api/*",
+      "/auth/*"
+    ]
   },
   "d1_databases": [
     {
