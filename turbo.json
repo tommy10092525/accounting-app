@@ -16,6 +16,12 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "deploy": {
+      // wrangler.jsonc の assets が ../web/dist を配信するため、
+      // Workerをデプロイする前に必ずフロントのビルドを終わらせる必要がある。
+      "dependsOn": ["web#build"],
+      "cache": false
     }
   }
 }
