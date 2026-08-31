@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { apiClient } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 
-const FIELD_CLASS = "mt-2 h-12 rounded-xl border-2 border-brand-blue card";
+const FIELD_CLASS = "mt-2 h-12 rounded-xl border-2 border-brand-blue bg-card";
 
 function RequiredBadge() {
   return <span className="ml-1 text-xs text-primary">必須</span>;
