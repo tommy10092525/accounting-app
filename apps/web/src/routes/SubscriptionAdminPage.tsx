@@ -1,15 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectLabel
-} from "@/components/ui/select"
+import { useState } from "react";
 const FIELD_CLASS = "mt-2 h-12 rounded-xl border-2 border-brand-blue bg-card";
 
 function RequiredBadge() {
@@ -21,7 +12,6 @@ function OptionalBadge() {
 }
 
 const SubscriptionAdminPage = () => {
-  const [paymentMethod,setPaymentMethod]=useState("card")
   const [card, setCard] = useState("");
   const [exp,setExp]=useState("");
   const [csc,setCsc]=useState("")
@@ -29,31 +19,10 @@ const SubscriptionAdminPage = () => {
   const [name,setName]=useState("")
   const [accountName,setAccountName]=useState("")
 
-  const items=[
-    // {label:"支払方法を選択してください",value:null},
-    {label:"銀行振り込み",value:"account",},
-    {label:"クレジットカード",value:"card",},
-  ]
-
   return (
     <div>
       <form action="" className="">
-        <Select onValueChange={(value=>setPaymentMethod(value))}>
-          <SelectTrigger className={FIELD_CLASS}>
-            <SelectValue/>
-          </SelectTrigger>
-          <SelectContent className="border-brand-blue border-2 rounded-xl">
-            <SelectGroup>
-              <SelectLabel>支払方法</SelectLabel>
-              {items.map(item=>(
-                <SelectItem key={item.value} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        {paymentMethod==="card" &&<div>
+        <div>
           
           <div className="mt-6">
             <Label htmlFor="card">
@@ -99,9 +68,9 @@ const SubscriptionAdminPage = () => {
               type="password"
             />
           </div>
-        </div>}
+        </div>
 
-        {paymentMethod==="account" && <div className="">
+       <div className="">
           
           <div className="mt-6">
             <Label htmlFor="representative-name">
@@ -129,7 +98,7 @@ const SubscriptionAdminPage = () => {
               onChange={(e) => setAccountName(e.target.value)}
             />
           </div>
-          </div>}
+          </div>
           <div className="border-brand-blue border-2 bg-card mt-6 rounded-xl p-6">
             <h2 className="text-sm">次回課金日</h2>
             <p className="text-xl">0000/00/00</p>
