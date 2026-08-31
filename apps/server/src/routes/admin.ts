@@ -1,9 +1,16 @@
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { and, desc, eq, sum } from "drizzle-orm";
 import { getSession } from "../auth";
 import { createDb, schema } from "../db";
+import {
+  RECEIPT_BODY_LIMIT_BYTES,
+  putReceipt,
+  receiptResponse,
+  validateReceipt,
+} from "../lib/receipt";
 
 type Variables = {
   userId: string;
@@ -86,12 +93,9 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     });
     if (!reimbursement) return c.json({ error: "not_found" }, 404);
 
-    const object = await c.env.R2.get(reimbursement.receiptImageKey);
-    if (!object) return c.json({ error: "not_found" }, 404);
-
-    return new Response(object.body, {
-      headers: { "Content-Type": object.httpMetadata?.contentType ?? "application/octet-stream" },
-    });
+    const response = await receiptResponse(c.env.R2, reimbursement.receiptImageKey);
+    if (!response) return c.json({ error: "not_found" }, 404);
+    return response;
   })
   .post("/reimbursements/:id/approve", async (c) => {
     const circleId = c.get("circleId");
@@ -166,33 +170,77 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     });
     return c.json(rows);
   })
-  .post("/income", zValidator("json", ledgerEntrySchema), async (c) => {
+  // 画像を受け取るため multipart/form-data。zValidatorが使えないぶん
+  // RPCクライアントに入力型が乗らないので、フロントは素のfetchで叩く。
+  .post("/income", bodyLimit({ maxSize: RECEIPT_BODY_LIMIT_BYTES }), async (c) => {
     const circleId = c.get("circleId");
     const userId = c.get("userId");
     const db = createDb(c.env.DB);
-    const { amount, description, occurredOn: occurredOnRaw } = c.req.valid("json");
+    const body = await c.req.parseBody();
 
+    const description = typeof body.description === "string" ? body.description.trim() : "";
+    if (!description) return c.json({ error: "description_required" }, 400);
+
+    const amount = Number(body.amount);
+    if (!Number.isInteger(amount) || amount <= 0) {
+      return c.json({ error: "invalid_amount" }, 400);
+    }
+
+    const occurredOnRaw = typeof body.occurredOn === "string" ? body.occurredOn : "";
     const occurredOn = occurredOnRaw ? new Date(occurredOnRaw) : new Date();
     if (Number.isNaN(occurredOn.getTime())) return c.json({ error: "invalid_date" }, 400);
+
+    // 画像は任意。添付が無い場合は receiptImageKey を null のままにする。
+    let receiptImageKey: string | null = null;
+    const receipt = body.receipt;
+    if (receipt instanceof File && receipt.size > 0) {
+      const receiptError = validateReceipt(receipt);
+      if (receiptError) return c.json({ error: receiptError }, 400);
+      receiptImageKey = await putReceipt(c.env.R2, circleId, receipt);
+    }
 
     await db.insert(schema.incomeRecords).values({
       circleId,
       amount,
       description,
+      receiptImageKey,
       occurredOn,
       recordedBy: userId,
     });
 
     return c.json({ success: true }, 201);
   })
+  .get("/income/:id/receipt", async (c) => {
+    const circleId = c.get("circleId");
+    const db = createDb(c.env.DB);
+    const row = await db.query.incomeRecords.findFirst({
+      where: and(
+        eq(schema.incomeRecords.id, c.req.param("id")),
+        eq(schema.incomeRecords.circleId, circleId),
+      ),
+      columns: { receiptImageKey: true },
+    });
+    if (!row?.receiptImageKey) return c.json({ error: "not_found" }, 404);
+
+    const response = await receiptResponse(c.env.R2, row.receiptImageKey);
+    if (!response) return c.json({ error: "not_found" }, 404);
+    return response;
+  })
   .delete("/income/:id", async (c) => {
     const circleId = c.get("circleId");
     const db = createDb(c.env.DB);
-    await db
-      .delete(schema.incomeRecords)
-      .where(
-        and(eq(schema.incomeRecords.id, c.req.param("id")), eq(schema.incomeRecords.circleId, circleId)),
-      );
+    const id = c.req.param("id");
+
+    // 先に画像のキーを引いてからレコードを消す(R2に孤児オブジェクトを残さないため)
+    const row = await db.query.incomeRecords.findFirst({
+      where: and(eq(schema.incomeRecords.id, id), eq(schema.incomeRecords.circleId, circleId)),
+      columns: { receiptImageKey: true },
+    });
+    if (!row) return c.json({ error: "not_found" }, 404);
+
+    await db.delete(schema.incomeRecords).where(eq(schema.incomeRecords.id, id));
+    if (row.receiptImageKey) await c.env.R2.delete(row.receiptImageKey);
+
     return c.json({ success: true });
   })
   // --- 支出管理(手動入力分) ---

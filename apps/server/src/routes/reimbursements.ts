@@ -2,9 +2,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { eq } from "drizzle-orm";
 import { createDb, schema } from "../db";
-
-const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10MB
-const ALLOWED_RECEIPT_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic"]);
+import { RECEIPT_BODY_LIMIT_BYTES, putReceipt, validateReceipt } from "../lib/receipt";
 
 // 一般利用者向け(ログイン不要)。共有URLの publicToken からサークルを解決して立替申請を受け付ける。
 export const reimbursementsApp = new Hono<{ Bindings: Env }>()
@@ -19,8 +17,7 @@ export const reimbursementsApp = new Hono<{ Bindings: Env }>()
   })
   .post(
     "/circles/:token/reimbursements",
-    // フォームフィールド分の余裕を見て少し大きめに設定(実質の上限はレシート画像側で個別チェックする)
-    bodyLimit({ maxSize: MAX_RECEIPT_BYTES + 1024 * 1024 }),
+    bodyLimit({ maxSize: RECEIPT_BODY_LIMIT_BYTES }),
     async (c) => {
       const db = createDb(c.env.DB);
       const circle = await db.query.circles.findFirst({
@@ -48,18 +45,10 @@ export const reimbursementsApp = new Hono<{ Bindings: Env }>()
       if (!(receipt instanceof File)) {
         return c.json({ error: "receipt_required" }, 400);
       }
-      if (receipt.size > MAX_RECEIPT_BYTES) {
-        return c.json({ error: "receipt_too_large" }, 400);
-      }
-      if (!ALLOWED_RECEIPT_TYPES.has(receipt.type)) {
-        return c.json({ error: "receipt_invalid_type" }, 400);
-      }
+      const receiptError = validateReceipt(receipt);
+      if (receiptError) return c.json({ error: receiptError }, 400);
 
-      const extension = receipt.type.split("/")[1];
-      const receiptImageKey = `receipts/${circle.id}/${crypto.randomUUID()}.${extension}`;
-      await c.env.R2.put(receiptImageKey, await receipt.arrayBuffer(), {
-        httpMetadata: { contentType: receipt.type },
-      });
+      const receiptImageKey = await putReceipt(c.env.R2, circle.id, receipt);
 
       await db.insert(schema.reimbursementRequests).values({
         circleId: circle.id,
