@@ -5,6 +5,7 @@ import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 import Shonin from "@/components/images/承認待ち.svg"
+import seisan from "@/components/images/立替精算アイコン.svg"
 import daigakubetsuShosiki from "@/components/images/書式フォーマット.svg"
 import sishutsutouroku from "@/components/images/支出登録アイコン.svg"
 import shunyutouroku from "@/components/images/収入登録アイコン.svg"
@@ -59,6 +60,18 @@ export function DashboardSummaryPage() {
         className="flex items-center justify-between rounded-xl border-2 border-destructive/60 bg-card px-4 py-3"
       >
         <img src={Shonin}></img>
+        <span className="font-medium">
+          承認待ち <span className="text-destructive">{pendingCount}件</span>
+        </span>
+        <span className="text-xs text-primary underline">
+          承認待ち一覧へ &gt;
+        </span>
+      </Link>
+      <Link
+        to="/dashboard/liquidation"
+        className="flex items-center justify-between rounded-xl border-2 border-[#D7BC02] bg-card px-4 py-3"
+      >
+        <img src={seisan}></img>
         <span className="font-medium">
           承認待ち <span className="text-destructive">{pendingCount}件</span>
         </span>
@@ -207,18 +220,18 @@ export function DashboardSummaryPage() {
       </div>
       <ul className="list-disc list-inside marker:text-brand-blue">
         <li className="">
-          <Link className="" to={""}>
+          <Link className="" to={"/rule"}>
             特定商取引法に基づく表記{"   "}
             <span className="text-brand-blue">&gt;</span>
           </Link>
         </li>
         <li className="">
-          <Link className="" to={""}>利用規約{"   "}
+          <Link className="" to={"/rule"}>利用規約{"   "}
           <span className="text-brand-blue">&gt;</span>
           </Link>
         </li>
         <li className="">
-          <Link className="" to={""}>プライバシーポリシー{"   "}
+          <Link className="" to={"/rule"}>プライバシーポリシー{"   "}
           <span className="text-brand-blue">&gt;</span>
           </Link>
         </li>

@@ -15,6 +15,8 @@ import { SignUpPage } from "@/routes/SignUpPage";
 import SettingAdminPage from "./routes/SettingAdminPage";
 import SubscriptionAdminPage from "./routes/SubscriptionAdminPage";
 import TransactionsAdminPage from "./routes/TransactionsAdminPage";
+import LiquidationAdminPage from "./routes/LiquidationAdminPage";
+import RulePage from "./routes/RulePage"
 
 function HomePage() {
   return (
@@ -42,6 +44,7 @@ export function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/c/:token" element={<ReimbursementSubmitPage />} />
+        <Route path="/rule" element={<RulePage/>}/>
         <Route
           path="/onboarding"
           element={
@@ -65,6 +68,7 @@ export function App() {
           <Route path="setting" element={<SettingAdminPage />} />
           <Route path="subscription" element={<SubscriptionAdminPage />} />
           <Route path="transactions" element={<TransactionsAdminPage />} />
+          <Route path="liquidation" element={<LiquidationAdminPage/>}/>
         </Route>
       </Routes>
     </div>
