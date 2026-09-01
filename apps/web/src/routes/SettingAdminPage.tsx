@@ -224,6 +224,7 @@ const SettingAdminPage = () => {
               placeholder="メールアドレスを入力"
               className={FIELD_CLASS}
               value={email}
+              autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
             />
             <p className="mt-1 text-xs text-muted-foreground">
@@ -242,6 +243,7 @@ const SettingAdminPage = () => {
               placeholder="現在のパスワード"
               className={FIELD_CLASS}
               value={currentPassword}
+              autoComplete="current-password"
               onChange={(e) => setCurrentPassword(e.target.value)}
             />
           </div>
@@ -256,6 +258,7 @@ const SettingAdminPage = () => {
               placeholder="8文字以上"
               className={FIELD_CLASS}
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -270,6 +273,7 @@ const SettingAdminPage = () => {
               placeholder="もう一度入力"
               className={FIELD_CLASS}
               value={passwordConfirm}
+              autoComplete="new-password"
               onChange={(e) => setPasswordConfirm(e.target.value)}
             />
           </div>
