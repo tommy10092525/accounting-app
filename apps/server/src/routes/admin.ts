@@ -17,7 +17,7 @@ type Variables = {
   circleId: string;
 };
 
-const REIMBURSEMENT_STATUSES = ["pending", "approved", "rejected"] as const;
+const REIMBURSEMENT_STATUSES = ["pending", "approved", "rejected", "paid"] as const;
 type ReimbursementStatus = (typeof REIMBURSEMENT_STATUSES)[number];
 
 function parseStatus(value: string | undefined): ReimbursementStatus | undefined {
@@ -156,6 +156,31 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
         reviewedAt: new Date(),
         rejectionReason: body.reason || null,
       })
+      .where(eq(schema.reimbursementRequests.id, id));
+
+    return c.json({ success: true });
+  })
+  // 承認済みの立替を「精算済み(申請者への払い戻し完了)」にする。
+  // 支出への計上は承認時点で済んでいるので、ここではステータスだけを進める。
+  .post("/reimbursements/:id/paid", async (c) => {
+    const circleId = c.get("circleId");
+    const db = createDb(c.env.DB);
+    const id = c.req.param("id");
+
+    const reimbursement = await db.query.reimbursementRequests.findFirst({
+      where: and(
+        eq(schema.reimbursementRequests.id, id),
+        eq(schema.reimbursementRequests.circleId, circleId),
+      ),
+    });
+    if (!reimbursement) return c.json({ error: "not_found" }, 404);
+    if (reimbursement.status !== "approved") {
+      return c.json({ error: "not_approved" }, 409);
+    }
+
+    await db
+      .update(schema.reimbursementRequests)
+      .set({ status: "paid", updatedAt: new Date() })
       .where(eq(schema.reimbursementRequests.id, id));
 
     return c.json({ success: true });

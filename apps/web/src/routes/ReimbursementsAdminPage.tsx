@@ -14,6 +14,22 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: "amount-asc", label: "小さい金額" },
 ];
 
+// paid(精算済み)まで含めた全ステータスを網羅する。三項演算子で書くと
+// 新しいステータスを足したときに取りこぼすため、テーブルで持つ。
+const STATUS_LABEL = {
+  pending: "未承認",
+  approved: "承認済み",
+  rejected: "却下",
+  paid: "精算済み",
+} as const;
+
+const STATUS_CLASS = {
+  pending: "text-sm font-medium text-destructive",
+  approved: "text-sm font-medium text-green-600",
+  rejected: "text-sm font-medium text-muted-foreground",
+  paid: "text-sm font-medium text-brand-green",
+} as const;
+
 export function ReimbursementsAdminPage() {
   const queryClient = useQueryClient();
   const [showApproved, setShowApproved] = useState(false);
@@ -233,17 +249,7 @@ export function ReimbursementsAdminPage() {
               </p>
               <p className="mt-1 font-medium">¥{r.amount.toLocaleString()}</p>
             </div>
-            <span
-              className={
-                r.status === "pending"
-                  ? "text-sm font-medium text-destructive"
-                  : r.status === "approved"
-                    ? "text-sm font-medium text-green-600"
-                    : "text-sm font-medium text-muted-foreground"
-              }
-            >
-              {r.status === "pending" ? "未承認" : r.status === "approved" ? "承認済み" : "却下"}
-            </span>
+            <span className={STATUS_CLASS[r.status]}>{STATUS_LABEL[r.status]}</span>
           </button>
         ))}
       </div>
