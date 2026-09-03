@@ -176,7 +176,8 @@ export const reimbursementRequests = sqliteTable(
     // 長文メモ(任意)
     memo: text("memo"),
     receiptImageKey: text("receipt_image_key").notNull(), // R2オブジェクトキー
-    status: text("status", { enum: ["pending", "approved", "rejected"] })
+    // paid = 承認後、申請者への払い戻しまで完了した状態(清算済み)
+    status: text("status", { enum: ["pending", "approved", "rejected", "paid"] })
       .notNull()
       .default("pending"),
     submittedAt: createdAt(),
