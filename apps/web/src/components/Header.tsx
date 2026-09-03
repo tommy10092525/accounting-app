@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import wave from "@/components/images/Wave_Top.avif";
+import waveTop from "@/components/images/Wave_Top.avif";
 import menuIcon from "@/components/images/Menu.svg";
 
 export type HeaderMenuItem = {
@@ -72,7 +72,7 @@ const Header = ({ menuItems }: HeaderProps) => {
           </nav>
         </>
       )}
-      <img src={wave} className="max-h-40 w-full" alt="" />
+      <img src={waveTop} className="max-h-40 w-full" alt="" />
     </header>
   );
 };

@@ -1,10 +1,10 @@
 import React from 'react'
-import footerImage from "@/components/images/Wave_Bottom.avif"
+import waveBottom from "@/components/images/Wave_Bottom.avif"
 
 const Footer = () => {
   return (
     <footer className="w-full">
-      <img src={footerImage} className="w-full h-40" alt="" />
+      <img src={waveBottom} className="w-full h-40" alt="" />
     </footer>
   )
 }

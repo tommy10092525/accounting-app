@@ -12,7 +12,7 @@ const Wrapper = ({
   return (
     <div className="flex min-h-screen flex-col">
       <Header menuItems={menuItems} />
-      <div className="mx-auto w-full max-w-md flex-1 px-6 py-8">{children}</div>
+      <div className="mx-auto w-full max-w-md flex-1 px-6">{children}</div>
       <Footer />
     </div>
   );
