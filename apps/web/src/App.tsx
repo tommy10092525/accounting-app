@@ -17,6 +17,7 @@ import SubscriptionAdminPage from "./routes/SubscriptionAdminPage";
 import TransactionsAdminPage from "./routes/TransactionsAdminPage";
 import LiquidationAdminPage from "./routes/LiquidationAdminPage";
 import RulePage from "./routes/RulePage"
+import PublicTokenAdminPage from "./routes/PublicTokenAdminPage";
 
 function HomePage() {
   return (
@@ -69,6 +70,7 @@ export function App() {
           <Route path="subscription" element={<SubscriptionAdminPage />} />
           <Route path="transactions" element={<TransactionsAdminPage />} />
           <Route path="liquidation" element={<LiquidationAdminPage/>}/>
+          <Route path="publicToken" element={<PublicTokenAdminPage/>}/>
         </Route>
       </Routes>
     </div>
