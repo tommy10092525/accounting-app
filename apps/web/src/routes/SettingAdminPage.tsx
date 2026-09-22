@@ -145,18 +145,26 @@ const SettingAdminPage = () => {
           {/* 通知の配信基盤が未実装のため、現時点では表示のみ */}
           <Switch className="data-[state=checked]:bg-brand-blue" id="notification" disabled />
         </div>
+        <div className="flex flex-col gap-2">
+          <button className="bg-brand-blue rounded-lg py-2 px-4 text-white text-left hover:underline">
+            <Link to={"#"}>会計書式の登録・変更 &gt;</Link>
+          </button>
+          <button className="bg-brand-blue rounded-lg py-2 px-4 text-white text-left hover:underline">
+            <Link to={"/dashboard/subscription"}>サブスク管理 &gt;</Link>
+          </button>
+        </div>
+        <Button
+          variant="destructive"
+          onClick={handleSignOut}
+          className="mx-auto rounded-full border-2 border-rose-500 px-6 py-4 text-rose-500 hover:bg-transparent bg-card"
+        >
+          ログアウト
+        </Button>
         <div>
           <Link to="#" className="text-xl underline">
             ヘルプ・お問い合わせ{"         >"}
           </Link>
         </div>
-        <Button
-          variant="destructive"
-          onClick={handleSignOut}
-          className="mx-auto rounded-full border-2 border-destructive px-2 py-1 text-xl text-destructive hover:bg-transparent bg-card"
-        >
-          ログアウト
-        </Button>
 
         <h2 className="text-center text-2xl font-bold">会員情報</h2>
         <form onSubmit={handleSubmit}>
