@@ -1,17 +1,22 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import photoIcon from "@/components/images/photo_Icon.svg";
 
-const FIELD_CLASS="mt-2 h-12 rounded-xl border-2 border-brand-blue bg-card"
+const FIELD_CLASS = "mt-2 h-12 rounded-xl border-2 border-brand-blue bg-card";
+const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10MB
 
 export function ExpenseAdminPage() {
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [occurredOn, setOccurredOn] = useState("");
+  const [receipt, setReceipt] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { data: rows, isPending } = useQuery({
@@ -28,13 +33,38 @@ export function ExpenseAdminPage() {
     void queryClient.invalidateQueries({ queryKey: ["admin", "summary"] });
   }
 
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    if (file && file.size > MAX_RECEIPT_BYTES) {
+      setError("画像は10MB以内にしてください");
+      setReceipt(null);
+      event.target.value = "";
+      return;
+    }
+    setError(null);
+    setReceipt(file);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setIsSubmitting(true);
 
-    const res = await apiClient.api.admin.expenses.$post({
-      json: { amount: Number(amount), description, occurredOn: occurredOn || undefined },
+    // 画像を含むため multipart/form-data。この形式のルートはRPCクライアントに
+    // 入力型が乗らないため、素のfetchで送信する。
+    const formData = new FormData();
+    formData.set("description", description);
+    formData.set("amount", amount);
+    formData.set("occurredOn", occurredOn);
+    if (receipt) formData.set("receipt", receipt);
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/expenses`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
     });
+
+    setIsSubmitting(false);
 
     if (!res.ok) {
       setError("登録に失敗しました");
@@ -44,12 +74,21 @@ export function ExpenseAdminPage() {
     setAmount("");
     setDescription("");
     setOccurredOn("");
+    setReceipt(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     refetchAll();
   }
 
   async function handleDelete(id: string) {
     const res = await apiClient.api.admin.expenses[":id"].$delete({ param: { id } });
     if (res.ok) refetchAll();
+  }
+
+  async function handleViewReceipt(id: string) {
+    const res = await apiClient.api.admin.expenses[":id"].receipt.$get({ param: { id } });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    window.open(URL.createObjectURL(blob), "_blank");
   }
 
   return (
@@ -98,10 +137,35 @@ export function ExpenseAdminPage() {
               onChange={(e) => setOccurredOn(e.target.value)}
             />
           </div>
+          <div className="mt-6">
+            <Label htmlFor="expense-receipt">
+              画像アップロード <span className="ml-1 text-xs text-muted-foreground">任意</span>
+            </Label>
+            <input
+              ref={fileInputRef}
+              id="expense-receipt"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-blue text-sm font-medium text-white"
+            >
+              <img src={photoIcon} alt="" className="size-5" />
+              {receipt ? receipt.name : "ファイルを選択"}
+            </button>
+          </div>
           {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
           <div className="mt-8 flex items-center">
-            <Button className="mx-auto rounded-full px-8 py-2 text-lg" type="submit">
-              登録
+            <Button
+              className="mx-auto rounded-full px-8 py-2 text-lg"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "登録中..." : "登録"}
             </Button>
           </div>
         </form>
@@ -130,9 +194,16 @@ export function ExpenseAdminPage() {
                 </p>
               </div>
               {row.source === "manual" && (
-                <Button variant="ghost" size="sm" onClick={() => handleDelete(row.id)}>
-                  削除
-                </Button>
+                <div className="flex shrink-0 items-center gap-1">
+                  {row.receiptImageKey && (
+                    <Button variant="outline" size="sm" onClick={() => handleViewReceipt(row.id)}>
+                      画像
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(row.id)}>
+                    削除
+                  </Button>
+                </div>
               )}
             </div>
           ))}

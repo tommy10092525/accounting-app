@@ -203,7 +203,9 @@ export const incomeRecords = sqliteTable(
       .references(() => circles.id),
     amount: integer("amount").notNull(),
     description: text("description").notNull(),
-    // 領収書などの画像(任意)。R2のオブジェクトキーを保持する
+    // 旧仕様の名残。画像の添付は支出側に移したので、新規の書き込みはしない。
+    // 既存行のR2オブジェクトを DELETE /income/:id で掃除するために定義だけ残している
+    // (スキーマから消すと db:generate がカラム削除のテーブル再構築を生成してしまう)。
     receiptImageKey: text("receipt_image_key"),
     occurredOn: integer("occurred_on", { mode: "timestamp" }).notNull(),
     recordedBy: text("recorded_by")
@@ -229,6 +231,9 @@ export const expenseRecords = sqliteTable(
     reimbursementRequestId: text("reimbursement_request_id").references(
       () => reimbursementRequests.id,
     ),
+    // 領収書などの画像(任意)。R2のオブジェクトキーを保持する。
+    // 手動入力分だけが持つ。立替由来の行は立替申請側の画像を参照するのでnullのまま。
+    receiptImageKey: text("receipt_image_key"),
     occurredOn: integer("occurred_on", { mode: "timestamp" }).notNull(),
     recordedBy: text("recorded_by").references(() => user.id),
     createdAt: createdAt(),

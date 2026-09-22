@@ -7,6 +7,7 @@
   "observability": {
     "enabled": true
   },
+  "account_id": "d6786b45957d1451fc64df81eaf19462",
   // ここは「デプロイ時に適用される本番の値」。ローカル開発では .dev.vars の
   // 同名キーが優先されるため、wrangler dev では localhost の値が使われる。
   // assets でフロントも同じWorkerから配信するので、3つとも同一オリジンになる。
@@ -25,11 +26,12 @@
     ]
   },
   "d1_databases": [
-    {
+    { 
       "binding": "DB",
       "database_name": "accounting-app-d1",
       "database_id": "11ee53d7-ae23-4061-bad7-ba4e2a09c8de",
-      "migrations_dir": "./drizzle"
+      "migrations_dir": "./drizzle",
+      "remote": false
     }
   ],
   "r2_buckets": [

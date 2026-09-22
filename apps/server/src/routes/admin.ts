@@ -44,7 +44,7 @@ const ledgerEntrySchema = z.object({
   description: z.string().trim().min(1),
   // HTMLの<input type="date">が送る"YYYY-MM-DD"形式。厳密なフォーマット検証はせず、
   // 実際にDateとしてパースできるかはハンドラ側でチェックする。
-  occurredOn: z.string().optional(),
+  occurredOn: z.string().optional()
 });
 
 // 管理者(代表)向け。全ルートでログイン + サークル所属を要求する。
@@ -195,9 +195,56 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     });
     return c.json(rows);
   })
+  .post("/income", zValidator("json", ledgerEntrySchema), async (c) => {
+    const circleId = c.get("circleId");
+    const userId = c.get("userId");
+    const db = createDb(c.env.DB);
+    const { amount, description, occurredOn: occurredOnRaw } = c.req.valid("json");
+
+    const occurredOn = occurredOnRaw ? new Date(occurredOnRaw) : new Date();
+    if (Number.isNaN(occurredOn.getTime())) return c.json({ error: "invalid_date" }, 400);
+
+    await db.insert(schema.incomeRecords).values({
+      circleId,
+      amount,
+      description,
+      occurredOn,
+      recordedBy: userId,
+    });
+
+    return c.json({ success: true }, 201);
+  })
+  .delete("/income/:id", async (c) => {
+    const circleId = c.get("circleId");
+    const db = createDb(c.env.DB);
+    const id = c.req.param("id");
+
+    // 収入への画像添付は廃止したが、旧仕様で保存された画像が残っている行があるため
+    // 先にキーを引いてからレコードを消す(R2に孤児オブジェクトを残さないため)
+    const row = await db.query.incomeRecords.findFirst({
+      where: and(eq(schema.incomeRecords.id, id), eq(schema.incomeRecords.circleId, circleId)),
+      columns: { receiptImageKey: true },
+    });
+    if (!row) return c.json({ error: "not_found" }, 404);
+
+    await db.delete(schema.incomeRecords).where(eq(schema.incomeRecords.id, id));
+    if (row.receiptImageKey) await c.env.R2.delete(row.receiptImageKey);
+
+    return c.json({ success: true });
+  })
+  // --- 支出管理(手動入力分) ---
+  .get("/expenses", async (c) => {
+    const circleId = c.get("circleId");
+    const db = createDb(c.env.DB);
+    const rows = await db.query.expenseRecords.findMany({
+      where: eq(schema.expenseRecords.circleId, circleId),
+      orderBy: [desc(schema.expenseRecords.occurredOn)],
+    });
+    return c.json(rows);
+  })
   // 画像を受け取るため multipart/form-data。zValidatorが使えないぶん
   // RPCクライアントに入力型が乗らないので、フロントは素のfetchで叩く。
-  .post("/income", bodyLimit({ maxSize: RECEIPT_BODY_LIMIT_BYTES }), async (c) => {
+  .post("/expenses", bodyLimit({ maxSize: RECEIPT_BODY_LIMIT_BYTES }), async (c) => {
     const circleId = c.get("circleId");
     const userId = c.get("userId");
     const db = createDb(c.env.DB);
@@ -224,10 +271,11 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
       receiptImageKey = await putReceipt(c.env.R2, circleId, receipt);
     }
 
-    await db.insert(schema.incomeRecords).values({
+    await db.insert(schema.expenseRecords).values({
       circleId,
       amount,
       description,
+      source: "manual",
       receiptImageKey,
       occurredOn,
       recordedBy: userId,
@@ -235,13 +283,13 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
 
     return c.json({ success: true }, 201);
   })
-  .get("/income/:id/receipt", async (c) => {
+  .get("/expenses/:id/receipt", async (c) => {
     const circleId = c.get("circleId");
     const db = createDb(c.env.DB);
-    const row = await db.query.incomeRecords.findFirst({
+    const row = await db.query.expenseRecords.findFirst({
       where: and(
-        eq(schema.incomeRecords.id, c.req.param("id")),
-        eq(schema.incomeRecords.circleId, circleId),
+        eq(schema.expenseRecords.id, c.req.param("id")),
+        eq(schema.expenseRecords.circleId, circleId),
       ),
       columns: { receiptImageKey: true },
     });
@@ -250,53 +298,6 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     const response = await receiptResponse(c.env.R2, row.receiptImageKey);
     if (!response) return c.json({ error: "not_found" }, 404);
     return response;
-  })
-  .delete("/income/:id", async (c) => {
-    const circleId = c.get("circleId");
-    const db = createDb(c.env.DB);
-    const id = c.req.param("id");
-
-    // 先に画像のキーを引いてからレコードを消す(R2に孤児オブジェクトを残さないため)
-    const row = await db.query.incomeRecords.findFirst({
-      where: and(eq(schema.incomeRecords.id, id), eq(schema.incomeRecords.circleId, circleId)),
-      columns: { receiptImageKey: true },
-    });
-    if (!row) return c.json({ error: "not_found" }, 404);
-
-    await db.delete(schema.incomeRecords).where(eq(schema.incomeRecords.id, id));
-    if (row.receiptImageKey) await c.env.R2.delete(row.receiptImageKey);
-
-    return c.json({ success: true });
-  })
-  // --- 支出管理(手動入力分) ---
-  .get("/expenses", async (c) => {
-    const circleId = c.get("circleId");
-    const db = createDb(c.env.DB);
-    const rows = await db.query.expenseRecords.findMany({
-      where: eq(schema.expenseRecords.circleId, circleId),
-      orderBy: [desc(schema.expenseRecords.occurredOn)],
-    });
-    return c.json(rows);
-  })
-  .post("/expenses", zValidator("json", ledgerEntrySchema), async (c) => {
-    const circleId = c.get("circleId");
-    const userId = c.get("userId");
-    const db = createDb(c.env.DB);
-    const { amount, description, occurredOn: occurredOnRaw } = c.req.valid("json");
-
-    const occurredOn = occurredOnRaw ? new Date(occurredOnRaw) : new Date();
-    if (Number.isNaN(occurredOn.getTime())) return c.json({ error: "invalid_date" }, 400);
-
-    await db.insert(schema.expenseRecords).values({
-      circleId,
-      amount,
-      description,
-      source: "manual",
-      occurredOn,
-      recordedBy: userId,
-    });
-
-    return c.json({ success: true }, 201);
   })
   .delete("/expenses/:id", async (c) => {
     const circleId = c.get("circleId");
@@ -312,6 +313,10 @@ export const adminApp = new Hono<{ Bindings: Env; Variables: Variables }>()
     }
 
     await db.delete(schema.expenseRecords).where(eq(schema.expenseRecords.id, id));
+    // 画像を持つのは手動入力分だけ(立替由来の行は立替申請側の画像を参照する)なので、
+    // ここで消しても立替のレシートを巻き込むことはない。
+    if (existing.receiptImageKey) await c.env.R2.delete(existing.receiptImageKey);
+
     return c.json({ success: true });
   })
   // --- 会計サマリー ---

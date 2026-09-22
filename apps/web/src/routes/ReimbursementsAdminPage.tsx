@@ -208,13 +208,13 @@ export function ReimbursementsAdminPage() {
         <img src={searchIcon} alt="" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 opacity-50" />
         <Input
           placeholder="検索"
-          className="h-10 rounded-full border-2 border-brand-blue pl-9 bg-card"
+          className="h-10 rounded-md border-2 border-brand-blue pl-9 bg-card"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-4">
         {SORT_OPTIONS.map((option) => (
           <button
             key={option.key}
@@ -222,8 +222,8 @@ export function ReimbursementsAdminPage() {
             onClick={() => setSort(option.key)}
             className={
               sort === option.key
-                ? "rounded-full bg-brand-blue px-3 py-1 text-xs font-medium text-white"
-                : "rounded-full border px-3 py-1 text-xs text-muted-foreground bg-card"
+                ? "rounded-md bg-brand-blue px-3 py-1 text-xs font-medium text-white"
+                : "rounded-md border px-3 py-1 text-xs text-brand-blue bg-card font-bold"
             }
           >
             ↓{option.label}

@@ -1,0 +1,1 @@
+ALTER TABLE `expense_records` ADD `receipt_image_key` text;
