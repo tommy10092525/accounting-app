@@ -4,24 +4,30 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
-import pendingApprovalIcon from "@/components/images/承認待ち.svg"
-import settlementIcon from "@/components/images/立替精算アイコン.svg"
-import formatTemplateIcon from "@/components/images/書式フォーマット.svg"
-import expenseEntryIcon from "@/components/images/支出登録アイコン.svg"
-import incomeEntryIcon from "@/components/images/収入登録アイコン.svg"
-import totalIncomeIcon from "@/components/images/総収入アイコン.svg"
-import totalExpenseIcon from "@/components/images/総支出アイコン.svg"
-import transactionsIcon from "@/components/images/取引一覧アイコン.svg"
-import accountingExportIcon from "@/components/images/会計出力アイコン.svg"
-import settingsIcon from "@/components/images/設定アイコン.svg"
-import subscriptionIcon from "@/components/images/サブスク管理アイコン.svg"
-import announcementIcon from "@/components/images/お知らせアイコン.svg"
-import linkIcon from "@/components/images/リンクアイコン.svg"
+import pendingApprovalIcon from "@/components/images/承認待ち.svg";
+// import settlementIcon from "@/components/images/立替精算アイコン.svg";
+import formatTemplateIcon from "@/components/images/書式フォーマット.svg";
+// import expenseEntryIcon from "@/components/images/支出登録アイコン.svg";
+// import incomeEntryIcon from "@/components/images/収入登録アイコン.svg";
+// import totalIncomeIcon from "@/components/images/総収入アイコン.svg";
+// import totalExpenseIcon from "@/components/images/総支出アイコン.svg";
+// import transactionsIcon from "@/components/images/取引一覧アイコン.svg";
+// import accountingExportIcon from "@/components/images/会計出力アイコン.svg";
+// import settingsIcon from "@/components/images/設定アイコン.svg";
+// import subscriptionIcon from "@/components/images/サブスク管理アイコン.svg";
+// import announcementIcon from "@/components/images/お知らせアイコン.svg";
+import linkIcon from "@/components/images/リンクアイコン.svg";
+import {
+  ArrowCircleUpIcon,
+  CheckSquareOffsetIcon,
+  CopyIcon,
+  GearIcon,
+  PlusCircleIcon,
+} from "@phosphor-icons/react";
 
 type Circle = { name: string; publicToken: string };
 
 export function DashboardSummaryPage() {
-  
   const { circle } = useOutletContext<{ circle: Circle }>();
 
   const { data: summary } = useQuery({
@@ -49,166 +55,126 @@ export function DashboardSummaryPage() {
 
   const shareUrl = `${window.location.origin}/#/c/${circle.publicToken}`;
 
-  // async function handleCopyShareUrl() {
-  //   await navigator.clipboard.writeText(shareUrl);
-  //   setCopied(true);
-  //   setTimeout(() => setCopied(false), 2000);
-  // }
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyShareUrl() {
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <div className="flex flex-col gap-2 -mt-8">
-      {/* <h1 className="text-2xl font-bold text-center">サマリー</h1> */}
-      <Link
-        to="/dashboard/reimbursements"
-        className="flex items-center justify-between rounded-xl border-2 border-destructive/60 bg-card px-4 py-3"
-      >
-        <img src={pendingApprovalIcon}></img>
-        <span className="font-medium">
-          承認待ち <span className="text-destructive">{pendingCount}件</span>
-        </span>
-        <span className="text-xs text-primary underline">
-          承認待ち一覧へ &gt;
-        </span>
-      </Link>
-      <Link
-        to="/dashboard/liquidation"
-        className="flex items-center justify-between rounded-xl border-2 border-[#D7BC02] bg-card px-4 py-3"
-      >
-        <img src={settlementIcon}></img>
-        <span className="font-medium">
-          未精算 <span className="text-destructive">{unpaidCount}件</span>
-        </span>
-        <span className="text-xs text-primary underline">
-          未精算一覧へ &gt;
-        </span>
-      </Link>
-      <Link
-        to="#"
-        className="border-green-500 border-2 rounded-xl px-4 py-3 bg-white flex items-center gap-2"
-      >
-        <img src={formatTemplateIcon}></img>
-        大学別書式フォーマット登録（未） &gt;
-      </Link>
-      <Link to={"/dashboard/publicToken"}
-        className="border-brand-blue border rounded-xl px-4 py-3 bg-white flex items-center gap-2">
-          <img src={linkIcon}/>
-          立替リンク発行
-
-      </Link>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl border-3 border-brand-blue bg-card p-4">
-          <div className="flex gap-2">
-            <img src={totalIncomeIcon} className="size-12" alt="" />
-            <div>
-              <p className="text-lg font-semibold">総収入</p>
-              <p className="text-lg font-semibold">
-                {summary ? `¥${summary.income.toLocaleString()}` : "-"}
-              </p>
-            </div>
+      <div className="bg-red-100 rounded-lg p-4">
+        <h2 className="font-bold text-xl">立替精算</h2>
+        <Link
+          to="/dashboard/reimbursements"
+          className="flex items-center justify-between rounded-xl border-3 border-destructive/60 bg-card px-4 py-3"
+        >
+          <img src={pendingApprovalIcon}></img>
+          <span className="font-medium">
+            立替未精算 <span className="text-destructive">{pendingCount}件</span>
+          </span>
+          <span className="text-xs text-primary underline">
+            承認待ち一覧へ &gt;
+          </span>
+        </Link>
+        <div className="border-brand-blue border-2 rounded-xl px-3 py-3 bg-white gap-2 flex flex-col mt-2">
+          <h2 className="flex items-center">
+            立替リンク
+            <img src={linkIcon} />
+          </h2>
+          <div className="flex items-center flex-row-reverse border-brand-blue border-2 rounded-md p-1">
+            <button
+              className=""
+              onClick={() => {
+                handleCopyShareUrl();
+              }}
+            >
+              {!copied?<CopyIcon className="size-6 text-brand-blue" weight="fill" />:<CheckSquareOffsetIcon className="size-6 text-brand-blue" />}
+            </button>
+            <div className="text-xs text-nowrap overflow-hidden ml-2 font-bold">{shareUrl}</div>
           </div>
         </div>
-        <div className="rounded-xl border-3 border-brand-blue bg-card p-4 flex gap-2">
-          <img src={totalExpenseIcon} alt="" className="size-12" />
-          <div>
-            <p className="text-lg font-semibold">総支出</p>
-            <p className="mt-1 text-lg font-semibold">
-              {summary ? `¥${summary.expense.toLocaleString()}` : "-"}
-            </p>
-          </div>
-        </div>
-        <div className="rounded-xl border-3 border-brand-blue bg-card p-4 col-span-2">
-          <p className="text-muted-foreground">収支</p>
-          <p className="mt-1 text-lg font-semibold">
-            {summary ? `¥${summary.balance.toLocaleString()}` : "-"}
+      </div>
+      <div className="bg-blue-100 rounded-lg p-4">
+        <h2 className="text-xl font-bold">会計管理</h2>
+        <div className="">
+          <p className="text-sm bg-brand-blue rounded-t-lg px-6 py-2 text-white">
+            〇〇年度
           </p>
+          <div className="border-x-2 border-b-2 border-brand-blue rounded-b-lg bg-white p-2">
+            <div className="flex gap-6">
+              <ArrowCircleUpIcon
+                size={32}
+                weight="fill"
+                className="fill-brand-blue size-12"
+              />
+              <div>
+                <p className="text-xl font-bold">収支</p>
+                <p className="font-bold text-green-500">{summary ? `¥${summary.balance.toLocaleString()}` : "-"}</p>
+              </div>
+              {/* <img src={totalIncomeIcon} /> */}
+            </div>
+              <div className="flex flex-row-reverse">
+                  <Link to={"/dashboard/transactions"}>
+                <button className="bg-brand-blue rounded-full text-white text-xs py-1 px-6">
+                  詳細へ&gt;
+                </button>
+                  </Link>
+              </div>
+          </div>
+          <Link
+            to="#"
+            className="border-green-500 border-2 rounded-xl px-4 py-2 bg-white flex items-center gap-2 m-2"
+          >
+            <img src={formatTemplateIcon}></img>
+            <p className="font-bold text-sm">会計出力（未実装）</p>
+            <p className="text-xs">登録した大学書式</p>
+            <p className="text-brand-green font-bold text-xl"> &gt;</p>
+          </Link>
+          <div className="grid gap-2 grid-cols-2">
+            <Button
+              asChild
+              className="rounded-xl bg-brand-blue text-white hover:bg-brand-blue"
+            >
+              <Link to="/dashboard/expenses" className="flex">
+                {/* <img src={expenseEntryIcon} className="size-8" /> */}
+                <PlusCircleIcon size={32} className="size-8 fill-white" weight="fill" />
+                支出登録
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="rounded-xl bg-[#00BB5C] text-white hover:bg-[#00BB5C]"
+            >
+              <Link to="/dashboard/income" className="flex">
+                {/* <img src={incomeEntryIcon} /> */}
+                <PlusCircleIcon size={32} className="size-8 fill-white" weight="fill" />
+                収入登録
+              </Link>
+            </Button>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="rounded-xl border-brand-blue text-brand-blue hover:text-brand-blue"
+          >
+            <Link to="/dashboard/setting" className="mt-2 w-full">
+              {/* <img src={settingsIcon} /> */}
+              <GearIcon size={32} className="size-6" />
+              <p className="font-bold text-black">設定</p>
+              <p className="text-xs text-black">登録情報や会計書式の変更など</p>
+              <p className="text-xl">&gt;</p>
+            </Link>
+          </Button>
         </div>
       </div>
 
       <div>
-        <div className="grid grid-cols-3 gap-2">
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-blue text-brand-blue hover:text-brand-blue"
-          >
-            <Link to="/dashboard/expenses" className="flex-col block h-24">
-              <img src={expenseEntryIcon}/>
-              支出登録
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-green text-brand-green hover:text-brand-green"
-            >
-            <Link to="/dashboard/income" className="flex-col block h-24">
-              <img src={incomeEntryIcon}/>
-              収入登録
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-lightblue text-brand-lightblue hover:text-brand-lightblue"
-          >
-            <Link to="/dashboard/transactions" className="flex-col block h-24">
-              {/* <ListBulletsIcon
-                className="bg-brand-lightblue text-white p-2 size-12 rounded-full"
-                size={32}
-              /> */}
-              <img src={transactionsIcon}/>
-              収支一覧
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-yellow text-brand-yellow hover:text-brand-yellow"
-          >
-            <Link to="#" className="flex-col block h-24">
-              <img src={accountingExportIcon} className=""/>
-              会計出力（未）
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-lavender text-brand-lavender hover:text-brand-lavender"
-          >
-            <Link to="/dashboard/setting" className="flex-col block h-24">
-              <img src={settingsIcon}/>
-              設定
-            </Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-xl border-3 border-brand-pink text-brand-pink hover:text-brand-pink"
-          >
-            <Link to="/dashboard/subscription" className="flex-col block h-24">
-              <img src={subscriptionIcon}/>
-              サブスク管理
-            </Link>
-          </Button>
-        </div>
+        <div className="grid grid-cols-3 gap-2"></div>
       </div>
-      <div className="border-brand-blue border-2 rounded-lg p-4 bg-blue-100">
-        <div className="flex gap-6 items-center ">
-          {/* <MegaphoneIcon size={32} className="text-brand-blue rotate-y-180" /> */}
-          <img src={announcementIcon}/>
-          <h2 className="font-bold">お知らせ</h2>
-        </div>
-        <p>お知らせ１</p>
-        <p>お知らせ１</p>
-        <p>お知らせ１</p>
-        <Link
-          to={"#"}
-          className="text-right text-brand-blue font-bold mt-4 block"
-        >
-          全て見る（未） &gt;
-        </Link>
-      </div>
-      
+
       <ul className="list-disc list-inside marker:text-brand-blue">
         <li className="">
           <Link className="" to={"/rule"}>
@@ -217,13 +183,15 @@ export function DashboardSummaryPage() {
           </Link>
         </li>
         <li className="">
-          <Link className="" to={"/rule"}>利用規約{"   "}
-          <span className="text-brand-blue">&gt;</span>
+          <Link className="" to={"/rule"}>
+            利用規約{"   "}
+            <span className="text-brand-blue">&gt;</span>
           </Link>
         </li>
         <li className="">
-          <Link className="" to={"/rule"}>プライバシーポリシー{"   "}
-          <span className="text-brand-blue">&gt;</span>
+          <Link className="" to={"/rule"}>
+            プライバシーポリシー{"   "}
+            <span className="text-brand-blue">&gt;</span>
           </Link>
         </li>
       </ul>
