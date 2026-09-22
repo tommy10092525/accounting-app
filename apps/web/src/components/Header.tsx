@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import waveTop from "@/components/images/Wave_Top.avif";
 import menuIcon from "@/components/images/Menu.svg";
+import { HouseIcon, ListIcon } from "@phosphor-icons/react";
 
 export type HeaderMenuItem = {
   label: string;
@@ -18,14 +19,20 @@ const Header = ({ menuItems }: HeaderProps) => {
 
   return (
     <header className="relative">
-      <button
-        type="button"
-        aria-label="メニュー"
-        onClick={() => setIsMenuOpen((open) => !open)}
-        className="absolute left-0 top-0 z-20 m-4"
-      >
-        <img src={menuIcon} alt="" className="size-9" />
-      </button>
+      <div className="absolute left-0 top-0 z-20 m-4">
+        <button
+          type="button"
+          aria-label="メニュー"
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          <ListIcon size={32} className="size-8 text-white"/>
+        </button>
+        <button className="absolute ml-2">
+          <Link to={"/dashboard"}>
+            <HouseIcon size={32} className="size-8 text-white"/>
+          </Link>
+        </button>
+      </div>
       {isMenuOpen && (
         <>
           <button
