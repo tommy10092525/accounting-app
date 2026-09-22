@@ -22,8 +22,6 @@
       // Workerをデプロイする前に必ずフロントのビルドを終わらせる必要がある。
       "dependsOn": ["web#build"],
       "cache": false,
-      "persistent":true,
-      "interactive":true
     }
   }
 }
